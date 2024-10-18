@@ -99,3 +99,7 @@ Indexer (TheGraph)
 2. Implement FLOW
 3. Proper register knowledge UI
 4. Copy button next to deployment in the node
+
+### SUI Wallet
+
+0x96183944b1629adeb589da64589ce74e85946b8e7040ba106b7fcfd71ad9fd83
