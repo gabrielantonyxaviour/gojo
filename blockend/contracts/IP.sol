@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.26;
 
-import { IGroupingModule } from "@storyprotocol/protocol-core/contracts/interfaces/modules/grouping/IGroupingModule.sol";
-import { ILicensingModule } from "@storyprotocol/protocol-core/contracts/interfaces/modules/licensing/ILicensingModule.sol";
-import { IIPAssetRegistry } from "@storyprotocol/protocol-core/contracts/interfaces/registries/IIPAssetRegistry.sol";
+import { IGroupingModule } from "./interface/story-protocol-core/IGroupingModule.sol";
+import { ILicensingModule } from "./interface/story-protocol-core/ILicensingModule.sol";
+import { IIPAssetRegistry } from "./interface/story-protocol-core/IIPAssetRegistry.sol";
 import "./interface/INFT.sol";
 
 contract GojoIP {
@@ -21,8 +21,8 @@ contract GojoIP {
         gojoResourceGroupNft = INFT(gojoResourceGroupNftAddress);
     }
 
-
-    function createAiAgent() external{
+    function createAiAgent(string memory metadata, string memory ipMetadata) external{
+        
         // Create AI Agent IP
         // Register group IP
         // Mint license token to the AI agent or make the AI agent derivtive of the group IP with commerical use License

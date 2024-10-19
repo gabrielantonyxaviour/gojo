@@ -1,0 +1,18 @@
+{
+  "title": "Chainlink | Gojo Resource Group",
+  "description": "Chainlink is a decentralized oracle network that enables smart contracts to securely interact with real-world data. The Gojo AI Agent is a Chainlink node that provides access to the Gojo AI Platform's services.",
+  "ipType": "data-set",
+  "relationships": [],
+  "createdAt": "1729319632",
+  "watermarkImage": "walrus-image",
+  "creators": [],
+  "media": [],
+  "attributes": [],
+  "appInfo": {
+    "id": "gojo-protocol",
+    "name": "Gojo Protocol",
+    "website": "https://gojo-protocol.vercel.app/"
+  },
+  "tags": ["chainlink", "data-set", "infrastructure"],
+  "robotTerms": {}
+}
