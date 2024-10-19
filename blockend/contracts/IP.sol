@@ -1,22 +1,39 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.26;
 
-interface IIPAssetRegistry {
-    function register(uint256 chainId, address tokenContract, uint256 tokenId) external returns (address);
-}
-
-
+import { IGroupingModule } from "@storyprotocol/protocol-core/contracts/interfaces/modules/grouping/IGroupingModule.sol";
+import { ILicensingModule } from "@storyprotocol/protocol-core/contracts/interfaces/modules/licensing/ILicensingModule.sol";
+import { IIPAssetRegistry } from "@storyprotocol/protocol-core/contracts/interfaces/registries/IIPAssetRegistry.sol";
+import "./interface/INFT.sol";
 
 contract GojoIP {
-    IIPAssetRegistry public immutable IP_ASSET_REGISTRY;
+    IIPAssetRegistry public constant IP_ASSET_REGISTRY = IIPAssetRegistry(0x1a9d0d28a0422F26D31Be72Edc6f13ea4371E11B);
+    IGroupingModule public constant GROUPING_MODULE = IGroupingModule(0x26Eb59B900FD158396931d2349Fd6B08f0390e76);
+    ILicensingModule public constant LICENSING_MODULE = ILicensingModule(0xd81fd78f557b457b4350cB95D20b547bFEb4D857);
 
-    constructor(address ipAssetRegistry) {
-        IP_ASSET_REGISTRY = IIPAssetRegistry(ipAssetRegistry);
-        SIMPLE_NFT = new SimpleNFT(msg.sender);
+    INFT public immutable gojoAiAgentNft;
+    INFT public immutable gojoResourceNft;
+    INFT public immutable gojoResourceGroupNft;
+
+    constructor(address gojoAiAgentNftAddress, address gojoResourceNftAddress, address gojoResourceGroupNftAddress) {
+        gojoAiAgentNft = INFT(gojoAiAgentNftAddress);
+        gojoResourceNft = INFT(gojoResourceNftAddress);
+        gojoResourceGroupNft = INFT(gojoResourceGroupNftAddress);
+    }
+
+
+    function createAiAgent() external{
+        // Create AI Agent IP
+        // Register group IP
+        // Mint license token to the AI agent or make the AI agent derivtive of the group IP with commerical use License
+    }
+
+    function createResource() external{
+        // Create Resource IP and add it to the group IP
     }
 
     function mintIp() external returns (address ipId, uint256 tokenId) {
-        tokenId = SIMPLE_NFT.mint(msg.sender);
+        // tokenId = gojoResourceNft.mint(msg.sender);
         ipId = IP_ASSET_REGISTRY.register(block.chainid, address(SIMPLE_NFT), tokenId);
     }
 
@@ -24,6 +41,9 @@ contract GojoIP {
         tokenId = SIMPLE_NFT.mint(msg.sender);
         ipId = IP_ASSET_REGISTRY.register(block.chainid, address(SIMPLE_NFT), tokenId);
     }
+
+
+
 
 
 }
