@@ -191,5 +191,9 @@ contract GojoStoryCore is OApp{
     function bytes32ToAddress(bytes32 _bytes32) public pure returns (address) {
         return address(uint160(uint256(_bytes32)));
     }
+    
+    function onERC721Received(address, address, uint256, bytes calldata) external pure returns (bytes4) {
+        return this.onERC721Received.selector;
+    }
 
 }

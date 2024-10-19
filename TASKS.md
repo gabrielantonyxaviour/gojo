@@ -136,3 +136,12 @@ Sat Evening
 Sat Night to morning
 
 1. Complete Everything hopefully
+
+## TX flow
+
+1. Deploy contracts
+2. Create AI agent - GojoStoryCore
+3. Upload resources - GojoStoryCore
+4. Create project - GojoCore
+5. Register generation - GojoCore
+6. Export Project - GojoCore

@@ -98,7 +98,7 @@ contract GojoCore is OApp, OAppOptionsType3{
         emit ProjectCreated(projectId, _metadata, msg.sender);
     }
 
-    function registerGeneration(uint256 _projectId, uint32[] memory newAiAgentsUsed, uint256 _ipConsumption) external {
+    function registerGeneration(uint256 _projectId, uint32[] memory newAiAgentsUsed, uint256 _ipConsumption) external onlyGojoCoreAiAgent(msg.sender) {
         if(projects[_projectId].isExported) revert AlreadyExported(_projectId);
         Project storage project = projects[_projectId];
         for(uint i = 0; i < newAiAgentsUsed.length; i++) project.aiAgentsUsed.push(newAiAgentsUsed[i]);
@@ -124,7 +124,7 @@ contract GojoCore is OApp, OAppOptionsType3{
     // TODO: This should do batch send.
     function _batchSend(
         bytes memory _payload,
-        bytes calldata _options 
+        bytes calldata _options
     ) internal {
         uint32[] memory _dstEids=new uint32[](2);
         _dstEids[0]=STORY_EID;
