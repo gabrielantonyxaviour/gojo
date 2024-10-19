@@ -24,6 +24,8 @@ const networks = {
     ipRegistry: "0x1a9d0d28a0422F26D31Be72Edc6f13ea4371E11B",
     endpoint: "0x6C7Ab2202C98C4227C5c46f1417D81144DA716Ff",
     layerZeroTesting: "0x08AC2b69feB202b34aD7c65E5Ac876E901CA6216",
+    aiAgentNft: "0xf2c043F3Bd4c6D1a38e27Df2b00bC23b931068DB",
+    resourceNft: "",
   },
   baseSepolia: {
     url:
