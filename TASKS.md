@@ -103,3 +103,10 @@ Indexer (TheGraph)
 ### SUI Wallet
 
 0x96183944b1629adeb589da64589ce74e85946b8e7040ba106b7fcfd71ad9fd83
+
+### Story contracts
+
+1. Create AI agent
+   - Create resources Group IP
+   - Create induvidual IP for the AI agent and make it it's derivative
+   - If the AI agents get revenue, it gets passed above to the parents
