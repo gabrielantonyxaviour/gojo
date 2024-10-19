@@ -25,7 +25,7 @@ const networks = {
     endpoint: "0x6C7Ab2202C98C4227C5c46f1417D81144DA716Ff",
     layerZeroTesting: "0x08AC2b69feB202b34aD7c65E5Ac876E901CA6216",
     aiAgentNft: "0xBbc7268f991b6325Ab733f7250da42243900C71a",
-    resourceNft: "0xAE82F939962BE8119f29E3a657fF6A07745fd735",
+    resourceNft: "0x17517F552d14E3ae1b2a8005f594D7916CE6466d",
     gojoIp: "0x9Fa2f0872498f56Fec437d92D66842f162c6B922",
   },
   baseSepolia: {

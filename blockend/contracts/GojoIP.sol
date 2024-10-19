@@ -51,18 +51,14 @@ contract GojoIP {
         address resourceId = IP_ASSET_REGISTRY.register(block.chainid, address(gojoResourceNft), tokenId);
         address[] memory ipIds = new address[](1);
         ipIds[0] = resourceId;
-        GROUPING_MODULE.addIp(aiAgents[aiAgentId], ipIds);
+        // TODO: Why does this fail?
+        // GROUPING_MODULE.addIp(aiAgents[aiAgentId], ipIds); 
         
         gojoResourceNft.safeTransferFrom(address(this), msg.sender, tokenId);
     }
 
-    function onERC721Received(
-    address ,
-    address ,
-    uint256 ,
-    bytes calldata 
-) external pure returns (bytes4) {
-    return this.onERC721Received.selector;
-}
+    function onERC721Received(address, address, uint256, bytes calldata) external pure returns (bytes4) {
+        return this.onERC721Received.selector;
+    }
 
 }

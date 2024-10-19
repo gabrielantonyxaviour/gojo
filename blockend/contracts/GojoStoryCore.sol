@@ -82,7 +82,7 @@ contract GojoStoryCore is OApp{
         resourceIdCount = 0;
     }
 
-    event ResourceUploaded(uint256 resourceId, string metadata, address owner, uint256 assetTokenId, uint256 ipTokenId, uint32 aiAgentId);
+    event ResourceUploaded(uint256 resourceId, string metadata, string ipMetadata, address owner, uint32 aiAgentId, uint256 assetTokenId, uint256 ipTokenId);
     event DomainSpecificAiAgentAdded(DomainSpecificAiAgent[] agent);
     event MessageSent(bytes32 guid, uint32 dstEid, bytes payload, MessagingFee fee, uint64 nonce);
     event MessageReceived(bytes32 guid, Origin origin, address executor, bytes payload, bytes extraData);
@@ -113,6 +113,7 @@ contract GojoStoryCore is OApp{
         emit DomainSpecificAiAgentAdded(_domainSpecificAiAgents);
     }
 
+
     // TODO: How to use ipMetadata?
     function _registerAiAgentIp(string memory metadata, string memory ipMetadata) internal returns(address groupId, address aiAgentId) {
         groupId = GROUPING_MODULE.registerGroup(address(SPLIT_POOL));
@@ -131,14 +132,19 @@ contract GojoStoryCore is OApp{
         gojoAiAgentNft.safeTransferFrom(address(this), msg.sender, tokenId);
     }
 
-    function createResource(string memory metadata, uint32 aiAgentId) external {
-        resources[resourceIdCount] = Resource(metadata, msg.sender, 0, 0, 0);
+    // TODO: How to use ipMetadata?
+    function createResource(string memory metadata, string memory ipMetadata, uint32 aiAgentId) external {
+        uint256 tokenId = gojoResourceNft.safeMint(address(this), metadata);
 
-        // TODO: Create IP
-        uint256 assetTokenId = 0;
-        uint256 ipTokenId = 0;
-
-        emit ResourceUploaded(resourceIdCount, metadata, msg.sender, assetTokenId, ipTokenId, aiAgentId);
+        address resourceId = IP_ASSET_REGISTRY.register(block.chainid, address(gojoResourceNft), tokenId);
+        address[] memory ipIds = new address[](1);
+        ipIds[0] = resourceId;
+        // TODO: Why does this fail?
+        // GROUPING_MODULE.addIp(aiAgents[aiAgentId], ipIds); 
+        
+        gojoResourceNft.safeTransferFrom(address(this), msg.sender, tokenId);
+        resources[resourceIdCount] = Resource(metadata, ipMetadata, msg.sender, aiAgentId, resourceId, tokenId);
+        emit ResourceUploaded(resourceIdCount, metadata, ipMetadata, msg.sender, aiAgentId, tokenId, resourceIdCount);
         resourceIdCount++;
     }
 
