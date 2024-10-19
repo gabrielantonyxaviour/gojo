@@ -3,6 +3,10 @@ from pydantic import BaseModel
 class Message(BaseModel):
     text: str
 
+class CodeGenerationRequest(BaseModel):
+    agent: str
+    prompt: str
+
 class FinetuningResponse(BaseModel):
     agent: str
     num_examples: int
@@ -14,3 +18,6 @@ class FinetuningResponse(BaseModel):
     assistant_tokens_stats: dict
     num_truncated: int
     estimated_cost: dict
+
+class CodeGenerationResponse(BaseModel):
+    generated_code: str
