@@ -3,3 +3,5 @@ asyncio>=3.4.3
 fastapi==0.111.0
 openai==v1.52.0
 python-dotenv==1.0.0
+scikit-learn==1.5.2
+numpy==1.26.4
