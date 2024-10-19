@@ -12,9 +12,9 @@ error NotGojoCore(address caller);
 error InvalidCrosschainCaller(uint32 eid, bytes32 caller);
 error NotEnoughBalance(uint256 balance, uint256 amount);
 
-contract GojoWrappedIP is ERC20, OApp {
+contract GojoWrappedStoryUSD is ERC20, OApp {
     address public gojoCoreAddress;
-    bytes32 public gojoStoryIpWrapperAddress;
+    bytes32 public gojoStoryUsdWrapperAddress;
     uint32 public constant STORY_EID = 40315;
     uint32 public constant SKALE_EID = 40273;
     uint32 public constant POLYGON_EID = 40267;
@@ -25,7 +25,7 @@ contract GojoWrappedIP is ERC20, OApp {
     event MessageReceived(bytes32 guid, Origin origin, address executor, bytes payload, bytes extraData);
     
     modifier onlyGojoStory(uint32 _eid, bytes32 _sender){
-        if(_eid != STORY_EID || _sender != gojoStoryIpWrapperAddress) revert InvalidCrosschainCaller(_eid, _sender);
+        if(_eid != STORY_EID || _sender != gojoStoryUsdWrapperAddress) revert InvalidCrosschainCaller(_eid, _sender);
         _;
     }
 
@@ -33,9 +33,9 @@ contract GojoWrappedIP is ERC20, OApp {
         gojoCoreAddress = _gojoCoreAddress;
     }
 
-    function setGojoStoryIPWrapperAddress(bytes32 _gojoStoryIpWrapperAddress) external onlyOwner {
-        gojoStoryIpWrapperAddress = _gojoStoryIpWrapperAddress;
-        setPeer(STORY_EID, _gojoStoryIpWrapperAddress);
+    function setGojoStoryUsdWrapperAddress(bytes32 _gojoStoryUsdWrapperAddress) external onlyOwner {
+        gojoStoryUsdWrapperAddress = _gojoStoryUsdWrapperAddress;
+        setPeer(STORY_EID, _gojoStoryUsdWrapperAddress);
     }
 
     function exportProject(address from, uint256 amount) external {

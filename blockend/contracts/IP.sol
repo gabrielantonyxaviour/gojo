@@ -22,9 +22,8 @@ contract GojoIP {
     }
 
     function createAiAgent(string memory metadata, string memory ipMetadata) external{
-        
-        // Create AI Agent IP
         // Register group IP
+        // Create AI Agent IP
         // Mint license token to the AI agent or make the AI agent derivtive of the group IP with commerical use License
     }
 

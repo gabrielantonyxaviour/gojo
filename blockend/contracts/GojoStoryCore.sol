@@ -2,8 +2,8 @@
 pragma solidity ^0.8.26;
 
 import { OApp, Origin, MessagingFee, MessagingReceipt} from "@layerzerolabs/oapp-evm/contracts/oapp/OApp.sol";
-import "./interface/IGojoWrappedIP.sol";
-import "./interface/IGojoStoryIPWrapper.sol";
+import "./interface/IGojoWrappedUsd.sol";
+import "./interface/IGojoStoryUsdWrapper.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
 error InvalidCaller(address caller);
@@ -41,7 +41,7 @@ contract GojoStoryCore is OApp{
 
     address public gojoCoreAIAgent;
     bytes32 public gojoCoreAddress;
-    address public gojoStoryIPWrapperAddress;
+    address public gojoStoryUsdWrapperAddress;
     uint32 public constant STORY_EID = 40315;
     uint32 public constant SKALE_EID = 40273;
     uint32 public constant POLYGON_EID = 40267;
@@ -75,8 +75,8 @@ contract GojoStoryCore is OApp{
         setPeer(STORY_EID, addressToBytes32(_gojoCoreAddress));
     }
 
-    function setGojoStoryIPWrapperAddress(address _gojoStoryIPWrapperAddress) external onlyOwner {
-        gojoStoryIPWrapperAddress = _gojoStoryIPWrapperAddress;
+    function setGojoStoryUsdWrapperAddress(address _gojoStoryUsdWrapperAddress) external onlyOwner {
+        gojoStoryUsdWrapperAddress = _gojoStoryUsdWrapperAddress;
     }
 
     function createAiAgents(DomainSpecificAiAgent[] memory aiAgents, bytes calldata _options) external payable onlyOwner {
@@ -121,7 +121,7 @@ contract GojoStoryCore is OApp{
         bytes calldata _extraData  
     ) internal override  onlyGojoCore(_origin.srcEid, _origin.sender){
         Project memory project = abi.decode(_payload, (Project));   
-        IGojoStoryIPWrapper(gojoStoryIPWrapperAddress).unwrap(project.ipConsumption);
+        IGojoStoryUsdWrapper(gojoStoryUsdWrapperAddress).unwrap(project.ipConsumption);
         exportedProjects[exportedProjectsCount] = project;
         uint256 aiAgentsUsed = project.aiAgentsUsed.length;
         uint256 revenuePerAgent = project.ipConsumption / aiAgentsUsed;

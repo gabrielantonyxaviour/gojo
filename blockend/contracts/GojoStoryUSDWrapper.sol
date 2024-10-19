@@ -12,9 +12,9 @@ error InvalidCrosschainCaller(uint32 eid, bytes32 caller);
 error NotEnoughBalance(uint256 balance, uint256 amount);
 error UnAuthorizedCaller(address caller);
 
-contract GojoStoryIPWrapper is OApp {
+contract GojoStoryUSDWrapper is OApp {
 
-    bytes32 public gojoWrappedIpAddress;
+    bytes32 public gojoWrappedUsdAddress;
     address public gojoStoryCoreAddress;
     uint32 public constant STORY_EID = 40315;
     uint32 public constant SKALE_EID = 40273;
@@ -25,13 +25,13 @@ contract GojoStoryIPWrapper is OApp {
     event MessageReceived(bytes32 guid, Origin origin, address executor, bytes payload, bytes extraData);
     
     modifier onlyGojoWrappedIp(uint32 _eid, bytes32 _sender){
-        if(_eid != SKALE_EID || _sender != gojoWrappedIpAddress) revert InvalidCrosschainCaller(_eid, _sender);
+        if(_eid != SKALE_EID || _sender != gojoWrappedUsdAddress) revert InvalidCrosschainCaller(_eid, _sender);
         _;
     }
 
-    function setGojoWrappedIpAddress(address _gojoWrappedIpAddress) external onlyOwner {
-        gojoWrappedIpAddress = addressToBytes32(_gojoWrappedIpAddress);
-        setPeer(SKALE_EID, addressToBytes32(_gojoWrappedIpAddress));
+    function setGojoWrappedUsdAddress(address _gojoWrappedUsdAddress) external onlyOwner {
+        gojoWrappedUsdAddress = addressToBytes32(_gojoWrappedUsdAddress);
+        setPeer(SKALE_EID, addressToBytes32(_gojoWrappedUsdAddress));
     }
 
     function setGojoStoryCoreAddress(address _gojoStoryCoreAddress) external onlyOwner {

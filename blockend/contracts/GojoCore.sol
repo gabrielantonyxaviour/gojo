@@ -3,7 +3,7 @@ pragma solidity ^0.8.26;
 
 import { OApp, Origin, MessagingFee, MessagingReceipt} from "@layerzerolabs/oapp-evm/contracts/oapp/OApp.sol";
 import { OAppOptionsType3 } from "@layerzerolabs/oapp-evm/contracts/oapp/libs/OAppOptionsType3.sol";
-import "./interface/IGojoWrappedIP.sol";
+import "./interface/IGojoWrappedUsd.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
 error InvalidCaller(address caller);
@@ -17,7 +17,7 @@ contract GojoCore is OApp, OAppOptionsType3{
     
     struct ConstructorParams{
         address endpoint;
-        address gojoWrappedIP;
+        address gojoWrappedUsd;
         address gojoCoreAIAgent;
     }
 
@@ -35,7 +35,7 @@ contract GojoCore is OApp, OAppOptionsType3{
         address agentAddress;
     }
 
-    address public gojoWrappedIP;
+    address public gojoWrappedUsd;
     address public gojoCoreAIAgent;
     bytes32 public gojoStoryCoreAddress;
     bytes32 public gojoSignHookAddres;
@@ -51,7 +51,7 @@ contract GojoCore is OApp, OAppOptionsType3{
     mapping(uint32 => DomainSpecificAiAgent) public domainSpecificAiAgents;
 
     constructor(ConstructorParams memory _params) OApp(_params.endpoint, msg.sender) Ownable(msg.sender) {
-        gojoWrappedIP = _params.gojoWrappedIP;
+        gojoWrappedUsd = _params.gojoWrappedUsd;
         gojoCoreAIAgent = _params.gojoCoreAIAgent;
         projectIdCount = 0;
     }
@@ -87,8 +87,8 @@ contract GojoCore is OApp, OAppOptionsType3{
         setPeer(POLYGON_EID, addressToBytes32(_gojoSignHookAddress));
     }
 
-    function setGojoWrappedIP(address _gojoWrappedIP) external onlyOwner {
-        gojoWrappedIP = _gojoWrappedIP;
+    function setGojoWrappedUsd(address _gojoWrappedUsd) external onlyOwner {
+        gojoWrappedUsd = _gojoWrappedUsd;
     }
 
     function createProject(string memory _metadata) external {
@@ -111,9 +111,9 @@ contract GojoCore is OApp, OAppOptionsType3{
         if(projects[_projectId].isExported) revert AlreadyExported(_projectId);
         if(projects[_projectId].owner != msg.sender) revert NotProjectOwner(_projectId, msg.sender);
         
-        uint256 _availaleIP = IGojoWrappedIP(gojoWrappedIP).balanceOf(msg.sender);
+        uint256 _availaleIP = IGojoWrappedUsd(gojoWrappedUsd).balanceOf(msg.sender);
         if(projects[_projectId].ipConsumption > _availaleIP) revert NotEnoughIP(_projectId, projects[_projectId].ipConsumption, _availaleIP);
-        IGojoWrappedIP(gojoWrappedIP).exportProject(msg.sender, projects[_projectId].ipConsumption);
+        IGojoWrappedUsd(gojoWrappedUsd).exportProject(msg.sender, projects[_projectId].ipConsumption);
         
         Project storage project = projects[_projectId];
         project.isExported = true;
