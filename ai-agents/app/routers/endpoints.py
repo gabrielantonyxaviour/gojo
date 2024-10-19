@@ -13,7 +13,6 @@ import os
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 router = APIRouter()
-
 client = OpenAI()
 
 @router.post("/fine-tune-estimate/", response_model=FinetuningEstimateResponse)
@@ -134,21 +133,24 @@ async def delete_fine_tuned_model(model_id: str):
         return DeleteModelResponse(id=response.id, deleted=response.deleted)
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
-
+    
 @router.post("/fine-tune-solidity/{agent}", response_model=FineTuningResponse)
 async def fine_tune_solidity(agent: str, background_tasks: BackgroundTasks):
     try:
         # Prepare the training data
-        background_tasks.add_task(prepare_data)
+        prepare_data()
         
         # Get the path to the prepared training data
-        data_path = f"data/{agent.lower().replace(' ', '_')}_training_data.jsonl"
+        data_path = f"/app/data/{agent.lower().replace(' ', '_')}_training_data.jsonl"
+        
+        if not os.path.exists(data_path):
+            raise FileNotFoundError(f"Training data file not found: {data_path}")
         
         # Initiate fine-tuning
         job_info = fine_tune_agent(agent, data_path)
         
         return FineTuningResponse(**job_info)
-    except FileNotFoundError:
-        raise HTTPException(status_code=404, detail=f"Training data for {agent} not found")
+    except FileNotFoundError as e:
+        raise HTTPException(status_code=404, detail=str(e))
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail=f"An error occurred during fine-tuning: {str(e)}")
