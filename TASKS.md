@@ -148,7 +148,6 @@ Sat Night to morning
 4. Phala web hosting
 5. Make contracts work
    - What options do I need to pass - LayerZero
-   - TODO questions - Story
 6. Build frontend components
 7. Integrate frontend
 8. Subgraphs

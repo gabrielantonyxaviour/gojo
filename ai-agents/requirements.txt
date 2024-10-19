@@ -5,3 +5,4 @@ openai==v1.52.0
 python-dotenv==1.0.0
 scikit-learn==1.5.2
 numpy==1.26.4
+tiktoken>=0.3.3

@@ -1,0 +1,16 @@
+{
+  "examples": [
+    {
+      "prompt": "Create a basic attestation contract using Sign Protocol",
+      "code": "// SPDX-License-Identifier: MIT\npragma solidity ^0.8.0;\n\nimport \"@ethereum-attestation-service/eas-contracts/contracts/EAS.sol\";\n\ncontract SignProtocolAttestation {\n    EAS private immutable eas;\n\n    constructor(address easContractAddress) {\n        eas = EAS(easContractAddress);\n    }\n\n    function attest(\n        bytes32 schema,\n        address recipient,\n        bytes calldata data\n    ) external {\n        eas.attest(schema, recipient, 0, 0, data);\n    }\n\n    function getAttestation(bytes32 uid) external view returns (EAS.Attestation memory) {\n        return eas.getAttestation(uid);\n    }\n}"
+    },
+    {
+      "prompt": "Implement a function to revoke an attestation",
+      "code": "function revokeAttestation(bytes32 uid) external {\n    eas.revoke(uid, 0);\n}\n\nfunction isAttestationRevoked(bytes32 uid) external view returns (bool) {\n    return eas.isAttestationRevoked(uid);\n}"
+    },
+    {
+      "prompt": "Create a function to verify multiple attestations",
+      "code": "function verifyMultipleAttestations(bytes32[] calldata uids) external view returns (bool[] memory) {\n    bool[] memory results = new bool[](uids.length);\n    for (uint i = 0; i < uids.length; i++) {\n        EAS.Attestation memory attestation = eas.getAttestation(uids[i]);\n        results[i] = attestation.revocationTime == 0 && attestation.expirationTime > block.timestamp;\n    }\n    return results;\n}"
+    }
+  ]
+}

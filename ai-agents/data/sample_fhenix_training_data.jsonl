@@ -1,0 +1,16 @@
+{
+  "examples": [
+    {
+      "prompt": "Create a basic private token contract using Fhenix",
+      "code": "// SPDX-License-Identifier: MIT\npragma solidity ^0.8.0;\n\nimport \"fhenix-contracts/token/ERC20/FheERC20.sol\";\n\ncontract PrivateToken is FheERC20 {\n    constructor(string memory name, string memory symbol) FheERC20(name, symbol) {}\n\n    function mint(euint32 amount) public {\n        _mint(msg.sender, amount);\n    }\n\n    function transferPrivate(address to, euint32 amount) public {\n        _transfer(msg.sender, to, amount);\n    }\n\n    function getEncryptedBalance(address account) public view returns (bytes memory) {\n        return _balances[account].encrypt();\n    }\n}"
+    },
+    {
+      "prompt": "Implement a private voting system using Fhenix",
+      "code": "contract PrivateVoting {\n    mapping(address => euint32) private votes;\n    euint32 private totalVotes;\n\n    function castVote(euint32 vote) public {\n        require(votes[msg.sender].eq(0).decrypt(), \"Already voted\");\n        votes[msg.sender] = vote;\n        totalVotes = totalVotes.add(vote);\n    }\n\n    function getTotalVotes() public view returns (bytes memory) {\n        return totalVotes.encrypt();\n    }\n\n    function hasVoted(address voter) public view returns (bool) {\n        return !votes[voter].eq(0).decrypt();\n    }\n}"
+    },
+    {
+      "prompt": "Create a private auction contract using Fhenix",
+      "code": "contract PrivateAuction {\n    FheERC20 private token;\n    address public seller;\n    euint32 private highestBid;\n    address private highestBidder;\n    uint public endTime;\n\n    constructor(address _token, uint _duration) {\n        token = FheERC20(_token);\n        seller = msg.sender;\n        endTime = block.timestamp + _duration;\n    }\n\n    function placeBid(euint32 amount) public {\n        require(block.timestamp < endTime, \"Auction ended\");\n        require(amount.gt(highestBid).decrypt(), \"Bid not high enough\");\n\n        if (highestBidder != address(0)) {\n            token.transfer(highestBidder, highestBid);\n        }\n\n        token.transferFrom(msg.sender, address(this), amount);\n        highestBid = amount;\n        highestBidder = msg.sender;\n    }\n\n    function endAuction() public {\n        require(block.timestamp >= endTime, \"Auction not yet ended\");\n        require(msg.sender == seller, \"Only seller can end auction\");\n\n        token.transfer(seller, highestBid);\n    }\n}"
+    }
+  ]
+}

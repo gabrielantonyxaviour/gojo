@@ -1,0 +1,16 @@
+{
+  "examples": [
+    {
+      "prompt": "Create a LayerZero endpoint contract",
+      "code": "// SPDX-License-Identifier: MIT\npragma solidity ^0.8.0;\n\nimport \"@layerzerolabs/solidity-examples/contracts/lzApp/NonblockingLzApp.sol\";\n\ncontract LayerZeroEndpoint is NonblockingLzApp {\n    constructor(address _lzEndpoint) NonblockingLzApp(_lzEndpoint) {}\n\n    function _nonblockingLzReceive(\n        uint16 _srcChainId,\n        bytes memory _srcAddress,\n        uint64 _nonce,\n        bytes memory _payload\n    ) internal override {\n        // Implement your cross-chain logic here\n    }\n\n    function sendMessage(uint16 _dstChainId, bytes memory _payload) public payable {\n        _lzSend(_dstChainId, _payload, payable(msg.sender), address(0x0), bytes(\"\"), msg.value);\n    }\n}"
+    },
+    {
+      "prompt": "Implement a function to send tokens cross-chain using LayerZero",
+      "code": "function sendTokensCrossChain(\n    uint16 _dstChainId,\n    bytes memory _toAddress,\n    uint256 _amount\n) public payable {\n    require(_amount > 0, \"Must send a non-zero amount\");\n    require(token.balanceOf(msg.sender) >= _amount, \"Insufficient balance\");\n\n    token.transferFrom(msg.sender, address(this), _amount);\n\n    bytes memory payload = abi.encode(_toAddress, _amount);\n\n    _lzSend(_dstChainId, payload, payable(msg.sender), address(0x0), bytes(\"\"), msg.value);\n\n    emit TokensSent(_dstChainId, msg.sender, _toAddress, _amount);\n}"
+    },
+    {
+      "prompt": "Create a function to receive tokens from another chain using LayerZero",
+      "code": "function _nonblockingLzReceive(\n    uint16 _srcChainId,\n    bytes memory _srcAddress,\n    uint64 _nonce,\n    bytes memory _payload\n) internal override {\n    (bytes memory toAddressBytes, uint256 amount) = abi.decode(_payload, (bytes, uint256));\n    address toAddress = bytesToAddress(toAddressBytes);\n\n    require(token.balanceOf(address(this)) >= amount, \"Insufficient balance in contract\");\n    token.transfer(toAddress, amount);\n\n    emit TokensReceived(_srcChainId, _srcAddress, toAddress, amount);\n}\n\nfunction bytesToAddress(bytes memory _addr) internal pure returns (address) {\n    address addr;\n    assembly {\n        addr := mload(add(_addr, 20))\n    }\n    return addr;\n}"
+    }
+  ]
+}
