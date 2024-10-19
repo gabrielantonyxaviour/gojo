@@ -38,9 +38,9 @@ export default function AppTestingSheet({
   const [selectContract, setSelectContract] = useState(false);
   const chains: Chain[] = [
     { name: "SKALE", chainId: 69, image: "/chains/skale.png" },
-    { name: "Neon EVM", chainId: 21, image: "/chains/neon.png" },
-    { name: "Gnosis Chain", chainId: 33, image: "/chains/gnosis.png" },
-    { name: "Zircuit", chainId: 4423, image: "/chains/zircuit.png" },
+    { name: "Fhenix", chainId: 21, image: "/chains/fhenix.png" },
+    { name: "Polygon", chainId: 33, image: "/chains/polygon.png" },
+    { name: "Story", chainId: 4423, image: "/chains/story.png" },
   ];
   const [prompt, setPrompt] = useState("");
 
