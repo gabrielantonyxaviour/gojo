@@ -29,21 +29,15 @@
 5. LayerZero - 8
    - Crosschain contracts
    - Testing
-6. Coinbase - 6
-   - Client connect and send tx
-   - MPC wallets in Phala
-   - Connect Smart wallet
-   - Webhooks?
-   - Display Base names?
-7. NounsDAO - 9
+6. NounsDAO - 9
    - Artwork
-8. XMTP - 7
+7. XMTP - 7
    - Chat as AI chat bot
-9. SKALE - 7
+8. SKALE - 7
    - Just deploy
    - Different type of chains. Play around?
-10. Polygon - 8
-11. Sign Protocol - 7
+9. Polygon - 8
+10. Sign Protocol - 7
 
 ## Contribute Page
 
@@ -145,3 +139,16 @@ Sat Night to morning
 4. Create project - GojoCore
 5. Register generation - GojoCore
 6. Export Project - GojoCore
+
+## TODO
+
+1. Phala AI agents
+2. Lit PRotocol
+3. XMTP
+4. Phala web hosting
+5. Make contracts work
+   - What options do I need to pass - LayerZero
+   - TODO questions - Story
+6. Build frontend components
+7. Integrate frontend
+8. Subgraphs

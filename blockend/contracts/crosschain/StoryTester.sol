@@ -8,7 +8,7 @@ import { Ownable } from "@openzeppelin/contracts/access/Ownable.sol";
 
 error LzAltTokenUnavailable();
 
-contract PolygonRelayer is OApp, OAppOptionsType3 {
+contract StoryTester is OApp, OAppOptionsType3 {
 
     string public data = "Nothing received yet";
     uint16 public constant SEND = 1;
@@ -23,9 +23,9 @@ contract PolygonRelayer is OApp, OAppOptionsType3 {
 
     constructor(address _endpoint, address _owner) OApp(_endpoint, _owner) Ownable(msg.sender) {}
 
-    function encodeMessage(string memory _message, uint16 _msgType, bytes memory _extraReturnOptions) public pure returns (bytes memory) {
-        uint256 extraOptionsLength = _extraReturnOptions.length;
-        return abi.encode(_message, _msgType, extraOptionsLength, _extraReturnOptions, extraOptionsLength);
+    function encodeMessage(string memory _message, uint16 _msgType, bytes memory _extraRelayOptions) public pure returns (bytes memory) {
+        uint256 extraOptionsLength = _extraRelayOptions.length;
+        return abi.encode(_message, _msgType, extraOptionsLength, _extraRelayOptions, extraOptionsLength);
     }
 
     function quote(
@@ -33,10 +33,10 @@ contract PolygonRelayer is OApp, OAppOptionsType3 {
         uint16 _msgType,
         string memory _message,
         bytes calldata _extraSendOptions,
-        bytes calldata _extraReturnOptions,
+        bytes calldata _extraRelayOptions,
         bool _payInLzToken
     ) public view returns (MessagingFee memory fee) {
-        bytes memory payload = encodeMessage(_message, _msgType, _extraReturnOptions);
+        bytes memory payload = encodeMessage(_message, _msgType, _extraRelayOptions);
         bytes memory options = combineOptions(_dstEid, _msgType, _extraSendOptions);
         fee = _quote(_dstEid, payload, options, _payInLzToken);
     }
@@ -44,7 +44,7 @@ contract PolygonRelayer is OApp, OAppOptionsType3 {
     function send(
         string memory _message,
         bytes calldata _extraSendOptions, 
-        bytes calldata _extraReturnOptions
+        bytes calldata _extraRelayOptions
     ) external payable {
         require(bytes(_message).length <= 32, "String exceeds 32 bytes");
 
@@ -52,7 +52,7 @@ contract PolygonRelayer is OApp, OAppOptionsType3 {
 
         _lzSend(
             STORY_EID,
-            encodeMessage(_message, SEND_ABC, _extraReturnOptions),
+            encodeMessage(_message, SEND_ABC, _extraRelayOptions),
             options,
             // Fee in native gas and ZRO token.
             MessagingFee(msg.value, 0),
