@@ -17,7 +17,6 @@ contract GojoIP {
 
     INFT public immutable gojoAiAgentNft;
     INFT public immutable gojoResourceNft;
-    INFT public immutable gojoResourceGroupNft;
 
     uint32 public aiAgentIdCounter;
     mapping(uint32 => address) public aiAgents;
@@ -26,18 +25,20 @@ contract GojoIP {
         gojoResourceNft = INFT(gojoResourceNftAddress);
     }
 
+    // TODO: How to use ipMetadata?
     function createAiAgent(string memory metadata, string memory ipMetadata) external {
         address groupId = GROUPING_MODULE.registerGroup(address(SPLIT_POOL));
         uint256 tokenId = gojoAiAgentNft.safeMint(address(this), metadata);
 
         address aiAgentId = IP_ASSET_REGISTRY.register(block.chainid, address(gojoAiAgentNft), tokenId);
         
-        // LICENSING_MODULE.attachLicenseTerms(groupId, PIL_LICENSE_TEMPLATE, NON_TRANSFERRABLE_COMMERCIAL_USE_LICENSE);
-        // address[] memory parentIpIds = new address[](1);
-        // parentIpIds[0] = groupId;
-        // uint256[] memory licenseTermIds = new uint256[](1);
-        // licenseTermIds[0]=NON_TRANSFERRABLE_COMMERCIAL_USE_LICENSE;
-        // LICENSING_MODULE.registerDerivative(aiAgentId, parentIpIds, licenseTermIds, PIL_LICENSE_TEMPLATE, "", 0);
+        LICENSING_MODULE.attachLicenseTerms(groupId, PIL_LICENSE_TEMPLATE, NON_TRANSFERRABLE_COMMERCIAL_USE_LICENSE);
+        address[] memory parentIpIds = new address[](1);
+        parentIpIds[0] = groupId;
+        uint256[] memory licenseTermIds = new uint256[](1);
+        licenseTermIds[0]=NON_TRANSFERRABLE_COMMERCIAL_USE_LICENSE;
+        // TODO: How to mint derivative without having to mint license tokens and not allow anyone to mint any license tokens?
+        // LICENSING_MODULE.registerDerivative(aiAgentId, parentIpIds, licenseTermIds, PIL_LICENSE_TEMPLATE, "", 0); 
 
         gojoAiAgentNft.safeTransferFrom(address(this), msg.sender, tokenId);
         aiAgents[aiAgentIdCounter] = aiAgentId;
@@ -54,5 +55,14 @@ contract GojoIP {
         
         gojoResourceNft.safeTransferFrom(address(this), msg.sender, tokenId);
     }
+
+    function onERC721Received(
+    address ,
+    address ,
+    uint256 ,
+    bytes calldata 
+) external pure returns (bytes4) {
+    return this.onERC721Received.selector;
+}
 
 }

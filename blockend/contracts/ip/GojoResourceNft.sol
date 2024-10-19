@@ -7,6 +7,8 @@ import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
 contract GojoResourceNft is ERC721, ERC721URIStorage, Ownable {
+    
+    string public constant CONTRACT_NAME = "GojoResourceNft";
     uint256 private _nextTokenId;
 
     constructor(address initialOwner)

@@ -5,6 +5,11 @@ import { OApp, Origin, MessagingFee, MessagingReceipt} from "@layerzerolabs/oapp
 import "./interface/IGojoWrappedUsd.sol";
 import "./interface/IGojoStoryUsdWrapper.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
+import { IGroupingModule } from "./interface/story-protocol-core/IGroupingModule.sol";
+import { ILicensingModule } from "./interface/story-protocol-core/ILicensingModule.sol";
+import { IIPAssetRegistry } from "./interface/story-protocol-core/IIPAssetRegistry.sol";
+import "./interface/INFT.sol";
+import "./interface/IMockEvenSplitGroupPool.sol";
 
 error InvalidCaller(address caller);
 error NotProjectOwner(uint256 projectId, address owner);
@@ -28,20 +33,34 @@ contract GojoStoryCore is OApp{
 
     struct Resource {
         string metadata;
-        address owner;
-        uint256 assetTokenId;
-        uint256 ipTokenId;
+        string ipMetadata;
+        address creator;
         uint32 aiAgentId;
+        address ipId;
+        uint256 tokenId;
+    }
+
+    struct CreateAiAgentsInput {
+        string metadata;
+        string ipMetadata;
     }
 
     struct DomainSpecificAiAgent{
         string metadata;
+        string ipMetadata;
+        address resourceGroupAddress;
         address agentAddress;
     }
 
     address public gojoCoreAIAgent;
     bytes32 public gojoCoreAddress;
     address public gojoStoryUsdWrapperAddress;
+    IIPAssetRegistry public constant IP_ASSET_REGISTRY = IIPAssetRegistry(0x1a9d0d28a0422F26D31Be72Edc6f13ea4371E11B);
+    IGroupingModule public constant GROUPING_MODULE = IGroupingModule(0x26Eb59B900FD158396931d2349Fd6B08f0390e76);
+    ILicensingModule public constant LICENSING_MODULE = ILicensingModule(0xd81fd78f557b457b4350cB95D20b547bFEb4D857);
+    IMockEvenSplitGroupPool public constant SPLIT_POOL = IMockEvenSplitGroupPool(0x69e0D5123bc0539a87a9dDcE82E803575e35cbb4);
+    address public constant PIL_LICENSE_TEMPLATE=0x0752f61E59fD2D39193a74610F1bd9a6Ade2E3f9;
+    uint256 public constant NON_TRANSFERRABLE_COMMERCIAL_USE_LICENSE = 2;
     uint32 public constant STORY_EID = 40315;
     uint32 public constant SKALE_EID = 40273;
     uint32 public constant POLYGON_EID = 40267;
@@ -49,6 +68,9 @@ contract GojoStoryCore is OApp{
     uint256 public resourceIdCount;
     uint32 public aiAgentsCount;
     uint32 public exportedProjectsCount;
+
+    INFT public immutable gojoAiAgentNft;
+    INFT public immutable gojoResourceNft;
 
     mapping(uint256 => Resource) public resources;
     mapping(uint32 => DomainSpecificAiAgent) public domainSpecificAiAgents;
@@ -79,24 +101,45 @@ contract GojoStoryCore is OApp{
         gojoStoryUsdWrapperAddress = _gojoStoryUsdWrapperAddress;
     }
 
-    function createAiAgents(DomainSpecificAiAgent[] memory aiAgents, bytes calldata _options) external payable onlyOwner {
+    function createAiAgents(CreateAiAgentsInput[] memory aiAgents, bytes calldata _options) external payable onlyOwner {
+        DomainSpecificAiAgent[] memory _domainSpecificAiAgents = new DomainSpecificAiAgent[](aiAgents.length);
         for(uint i = 0; i < aiAgents.length; i++){
-            domainSpecificAiAgents[aiAgentsCount] = aiAgents[i];
+            (address groupId, address aiAgentAddress) = _registerAiAgentIp(aiAgents[i].metadata, aiAgents[i].ipMetadata);
+            domainSpecificAiAgents[aiAgentsCount] = DomainSpecificAiAgent(aiAgents[i].metadata, aiAgents[i].ipMetadata, groupId, aiAgentAddress);
+            _domainSpecificAiAgents[i]=domainSpecificAiAgents[aiAgentsCount];
             aiAgentsCount++;
         }
         _send(abi.encode(aiAgents), _options);
-        emit DomainSpecificAiAgentAdded(aiAgents);
+        emit DomainSpecificAiAgentAdded(_domainSpecificAiAgents);
+    }
+
+    // TODO: How to use ipMetadata?
+    function _registerAiAgentIp(string memory metadata, string memory ipMetadata) internal returns(address groupId, address aiAgentId) {
+        groupId = GROUPING_MODULE.registerGroup(address(SPLIT_POOL));
+        uint256 tokenId = gojoAiAgentNft.safeMint(address(this), metadata);
+
+        aiAgentId = IP_ASSET_REGISTRY.register(block.chainid, address(gojoAiAgentNft), tokenId);
+        
+        LICENSING_MODULE.attachLicenseTerms(groupId, PIL_LICENSE_TEMPLATE, NON_TRANSFERRABLE_COMMERCIAL_USE_LICENSE);
+        address[] memory parentIpIds = new address[](1);
+        parentIpIds[0] = groupId;
+        uint256[] memory licenseTermIds = new uint256[](1);
+        licenseTermIds[0] = NON_TRANSFERRABLE_COMMERCIAL_USE_LICENSE;
+        // TODO: How to mint derivative without having to mint license tokens and not allow anyone to mint any license tokens?
+        // LICENSING_MODULE.registerDerivative(aiAgentId, parentIpIds, licenseTermIds, PIL_LICENSE_TEMPLATE, "", 0); 
+
+        gojoAiAgentNft.safeTransferFrom(address(this), msg.sender, tokenId);
     }
 
     function createResource(string memory metadata, uint32 aiAgentId) external {
-        uint256 resourceId = resourceIdCount;
-        resources[resourceId] = Resource(metadata, msg.sender, 0, 0, 0);
+        resources[resourceIdCount] = Resource(metadata, msg.sender, 0, 0, 0);
 
         // TODO: Create IP
         uint256 assetTokenId = 0;
         uint256 ipTokenId = 0;
 
-        emit ResourceUploaded(resourceId, metadata, msg.sender, assetTokenId, ipTokenId, aiAgentId);
+        emit ResourceUploaded(resourceIdCount, metadata, msg.sender, assetTokenId, ipTokenId, aiAgentId);
+        resourceIdCount++;
     }
 
     function _send(
