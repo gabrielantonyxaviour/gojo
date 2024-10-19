@@ -14,8 +14,8 @@ contract GojoResourceNft is ERC721, ERC721URIStorage, Ownable {
         Ownable(initialOwner)
     {}
 
-    function safeMint(address to, string memory uri) public onlyOwner {
-        uint256 tokenId = _nextTokenId++;
+    function safeMint(address to, string memory uri) public  returns(uint256 tokenId) {
+        tokenId = _nextTokenId++;
         _safeMint(to, tokenId);
         _setTokenURI(tokenId, uri);
     }

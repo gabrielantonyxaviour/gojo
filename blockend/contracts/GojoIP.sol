@@ -32,12 +32,12 @@ contract GojoIP {
 
         address aiAgentId = IP_ASSET_REGISTRY.register(block.chainid, address(gojoAiAgentNft), tokenId);
         
-        LICENSING_MODULE.attachLicenseTerms(groupId, PIL_LICENSE_TEMPLATE, NON_TRANSFERRABLE_COMMERCIAL_USE_LICENSE);
-        address[] memory parentIpIds = new address[](1);
-        parentIpIds[0] = groupId;
-        uint256[] memory licenseTermIds = new uint256[](1);
-        licenseTermIds[0]=NON_TRANSFERRABLE_COMMERCIAL_USE_LICENSE;
-        LICENSING_MODULE.registerDerivative(aiAgentId, parentIpIds, licenseTermIds, PIL_LICENSE_TEMPLATE, "", 0);
+        // // LICENSING_MODULE.attachLicenseTerms(groupId, PIL_LICENSE_TEMPLATE, NON_TRANSFERRABLE_COMMERCIAL_USE_LICENSE);
+        // // address[] memory parentIpIds = new address[](1);
+        // // parentIpIds[0] = groupId;
+        // // uint256[] memory licenseTermIds = new uint256[](1);
+        // // licenseTermIds[0]=NON_TRANSFERRABLE_COMMERCIAL_USE_LICENSE;
+        // // LICENSING_MODULE.registerDerivative(aiAgentId, parentIpIds, licenseTermIds, PIL_LICENSE_TEMPLATE, "", 0);
 
         gojoAiAgentNft.safeTransferFrom(address(this), msg.sender, tokenId);
         aiAgents[aiAgentIdCounter] = aiAgentId;
