@@ -1,7 +1,7 @@
 from typing import List, Dict
-from app.token_counter import num_tokens_from_messages
+from app.services.token_counter import num_tokens_from_messages
 
-def estimate_fine_tuning_cost(dataset: List[Dict]):
+def estimate_fine_tuning_cost(dataset: List[Dict]) -> Dict:
     MAX_TOKENS_PER_EXAMPLE = 16385
     TARGET_EPOCHS = 3
     MIN_TARGET_EXAMPLES = 100
@@ -18,6 +18,9 @@ def estimate_fine_tuning_cost(dataset: List[Dict]):
 
     convo_lens = [num_tokens_from_messages(ex["messages"]) for ex in dataset]
     n_billing_tokens_in_dataset = sum(min(MAX_TOKENS_PER_EXAMPLE, length) for length in convo_lens)
-    print(f"Dataset has ~{n_billing_tokens_in_dataset} tokens that will be charged for during training")
-    print(f"By default, you'll train for {n_epochs} epochs on this dataset")
-    print(f"By default, you'll be charged for ~{n_epochs * n_billing_tokens_in_dataset} tokens")
+    
+    return {
+        "billing_tokens": n_billing_tokens_in_dataset,
+        "epochs": n_epochs,
+        "total_billed_tokens": n_epochs * n_billing_tokens_in_dataset
+    }
