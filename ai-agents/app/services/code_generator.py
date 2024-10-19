@@ -1,5 +1,7 @@
-import openai
+from openai import OpenAI
 import os
+
+client = OpenAI()
 
 keywords = {
     "LayerZero": [
@@ -81,12 +83,11 @@ def detect_agent(prompt: str) -> str:
     raise ValueError("Unable to detect a specific agent from the prompt")
 
 def generate_code(prompt: str) -> tuple:
-    
     # You would replace these with your actual fine-tuned model names
     model_map = {
-        "LayerZero": "ft:gpt-3.5-turbo-0613:personal::7qTnJaHS",
-        "Fhenix": "ft:gpt-3.5-turbo-0613:personal::7r2nMopE",
-        "Sign Protocol": "ft:gpt-3.5-turbo-0613:personal::7s8vGVx0"
+        "LayerZero": "ft:gpt-4o-mini-2024-07-18:personal::AKCp3fUR",
+        "Fhenix": "ft:gpt-4o-mini-2024-07-18:personal::AKCp3fUR",
+        "Sign Protocol": "ft:gpt-4o-mini-2024-07-18:personal::AKCp3fUR"
     }
     
     agent = detect_agent(prompt)
@@ -99,13 +100,27 @@ def generate_code(prompt: str) -> tuple:
         {"role": "user", "content": prompt}
     ]
 
-    response = openai.ChatCompletion.create(
-        model=model,
-        messages=messages,
-        max_tokens=1000,
-        n=1,
-        stop=None,
-        temperature=0.7,
+    response = client.chat.completions.create(
+        model="gpt-4o",
+        messages=[
+            {
+                "role": "user",
+                "content": [
+                    {
+                        "type": "text",
+                        "text": prompt
+                    }
+                ]
+            },
+        ],
+        temperature=1,
+        max_tokens=2048,
+        top_p=1,
+        frequency_penalty=0,
+        presence_penalty=0,
+        response_format={
+            "type": "text"
+        }
     )
 
-    return agent, response.choices[0].message['content'].strip()
+    return agent, response.choices[0].message.content.strip()

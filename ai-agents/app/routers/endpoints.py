@@ -7,6 +7,7 @@ from app.models import (Message, FinetuningEstimateResponse, CodeGenerationReque
 from fastapi.responses import JSONResponse
 from app.scripts.prepare_solidity_data import main as prepare_data
 from app.services.fine_tuner import fine_tune_agent
+from app.services.code_generator import generate_code
 from openai import OpenAI
 import os
 
