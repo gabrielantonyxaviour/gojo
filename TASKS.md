@@ -1,5 +1,13 @@
 # Frontend
 
+### UI Components
+
+1. ~~DONE -What can I help you ship? https://ui.aceternity.com/components/container-cover~~
+2. ~~DONE - Floating Dock at the bottom - https://ui.aceternity.com/components/floating-dock~~
+3. https://ui.aceternity.com/components/moving-border - For loading
+4. https://ui.aceternity.com/components/multi-step-loader - For transactions?
+5. For Chat reply - https://ui.aceternity.com/components/typewriter-effect
+
 ## SPONSORS / WORKS
 
 1. Phala - 2
@@ -93,6 +101,11 @@ Indexer (TheGraph)
 8. Wrap IP (Converts IP to WrappedGojoIP and sends it to SKALE) - Story
 9. Make attestation (hook verifies the logic) - Polygon
 
+#### Contracts Pending
+
+1. Attestation validation logic
+2. Fix SKALE crosschain fee token issue
+
 ### Added Features
 
 1. Implement as IP currency as OFT and Each resource as ONFT?
@@ -104,9 +117,22 @@ Indexer (TheGraph)
 
 0x96183944b1629adeb589da64589ce74e85946b8e7040ba106b7fcfd71ad9fd83
 
-### Story contracts
+## TODO
 
-1. Create AI agent
-   - Create resources Group IP
-   - Create induvidual IP for the AI agent and make it it's derivative
-   - If the AI agents get revenue, it gets passed above to the parents
+Before 7 am
+
+1. Complete contracts fully and tested with indexer (with some bugs)
+2. Test graph
+
+Sat Morning
+
+1. Complete Phala
+2. Complete Lit Actions
+
+Sat Evening
+
+1. Complete XMTP
+
+Sat Night to morning
+
+1. Complete Everything hopefully
