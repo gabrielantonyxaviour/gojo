@@ -1,14 +1,19 @@
+import logging
 from fastapi import APIRouter, HTTPException, Query
 from app.models import (Message, FinetuningEstimateResponse, CodeGenerationRequest, 
                         CodeGenerationResponse, FineTuningRequest, FineTuningResponse,
                         ListJobsResponse, RetrieveJobResponse, CancelJobResponse,
-                        ListEventsResponse, DeleteModelResponse)
+                        ListEventsResponse, DeleteModelResponse, FineTuningJob, FineTuningEvent)
+from fastapi.responses import JSONResponse
 from app.services.fine_tuner import fine_tune_agent
 from openai import OpenAI
 import os
 
-
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 router = APIRouter()
+
+client = OpenAI()
 
 @router.post("/fine-tune-estimate/", response_model=FinetuningEstimateResponse)
 async def fine_tune_estimate(message: Message):
@@ -68,19 +73,40 @@ async def fine_tune(request: FineTuningRequest):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-@router.get("/fine-tuning/jobs", response_model=ListJobsResponse)
-async def list_fine_tuning_jobs(limit: int = Query(10, le=100)):
+# @router.get("/fine-tuning/jobs", response_model=ListJobsResponse)
+# async def list_fine_tuning_jobs(limit: int = Query(10, le=100)):
+#     try:
+#         jobs = client.fine_tuning.jobs.list(limit=limit)
+#         return ListJobsResponse(jobs=[FineTuningJob(**job) for job in jobs.data])
+#     except Exception as e:
+#         raise HTTPException(status_code=500, detail=str(e))
+
+@router.get("/fine-tuning/jobs/{job_id}")
+async def retrieve_fine_tuning_job(job_id: str):
     try:
-        jobs = client.fine_tuning.jobs.list(limit=limit)
-        return ListJobsResponse(jobs=[FineTuningJob(**job) for job in jobs.data])
+        job = client.fine_tuning.jobs.retrieve(job_id)
+        
+        # Log the entire job object
+        logger.info(f"Retrieved job: {job}")
+        
+        # Convert the job object to a dictionary
+        job_dict = job.model_dump()
+        
+        # Log the dictionary representation
+        logger.info(f"Job as dictionary: {job_dict}")
+        
+        # Return the raw dictionary as a JSON response
+        return JSONResponse(content=job_dict)
     except Exception as e:
+        logger.error(f"Error retrieving job: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
+
 
 @router.get("/fine-tuning/jobs/{job_id}", response_model=RetrieveJobResponse)
 async def retrieve_fine_tuning_job(job_id: str):
     try:
         job = client.fine_tuning.jobs.retrieve(job_id)
-        return RetrieveJobResponse(job=FineTuningJob(**job))
+        return RetrieveJobResponse(job=FineTuningJob(**job.model_dump()))
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 

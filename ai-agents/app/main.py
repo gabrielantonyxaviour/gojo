@@ -1,9 +1,9 @@
 from fastapi import FastAPI
-from app.routers import finetuning
+from app.routers import endpoints
 
 app = FastAPI()
 
-app.include_router(finetuning.router)
+app.include_router(endpoints.router)
 
 @app.get("/")
 async def root():

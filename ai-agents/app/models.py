@@ -33,10 +33,35 @@ class FineTuningResponse(BaseModel):
     status: str
     fine_tuned_model: str | None
 
+class ErrorInfo(BaseModel):
+    code: str
+    message: str
+    param: Optional[str] = None
+
+class Hyperparameters(BaseModel):
+    n_epochs: int
+    batch_size: int
+    learning_rate_multiplier: float
+
 class FineTuningJob(BaseModel):
     id: str
-    status: str
+    created_at: int
+    error: Optional[ErrorInfo] = None
     fine_tuned_model: Optional[str] = None
+    finished_at: Optional[int] = None
+    hyperparameters: Hyperparameters
+    model: str
+    object: str
+    organization_id: str
+    result_files: List[str]
+    seed: int
+    status: str
+    trained_tokens: Optional[int] = None
+    training_file: str
+    validation_file: Optional[str] = None
+    estimated_finish: Optional[int] = None
+    integrations: List[str] = []
+    user_provided_suffix: Optional[str] = None
 
 class FineTuningEvent(BaseModel):
     id: str
