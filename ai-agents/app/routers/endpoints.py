@@ -1,10 +1,11 @@
 import logging
-from fastapi import APIRouter, HTTPException, Query
+from fastapi import APIRouter, HTTPException, Query, BackgroundTasks
 from app.models import (Message, FinetuningEstimateResponse, CodeGenerationRequest, 
                         CodeGenerationResponse, FineTuningRequest, FineTuningResponse,
                         ListJobsResponse, RetrieveJobResponse, CancelJobResponse,
                         ListEventsResponse, DeleteModelResponse, FineTuningJob, FineTuningEvent)
 from fastapi.responses import JSONResponse
+from app.scripts.prepare_solidity_data import main as prepare_data
 from app.services.fine_tuner import fine_tune_agent
 from openai import OpenAI
 import os
@@ -131,5 +132,23 @@ async def delete_fine_tuned_model(model_id: str):
     try:
         response = client.models.delete(model_id)
         return DeleteModelResponse(id=response.id, deleted=response.deleted)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@router.post("/fine-tune-solidity/{agent}", response_model=FineTuningResponse)
+async def fine_tune_solidity(agent: str, background_tasks: BackgroundTasks):
+    try:
+        # Prepare the training data
+        background_tasks.add_task(prepare_data)
+        
+        # Get the path to the prepared training data
+        data_path = f"data/{agent.lower().replace(' ', '_')}_training_data.jsonl"
+        
+        # Initiate fine-tuning
+        job_info = fine_tune_agent(agent, data_path)
+        
+        return FineTuningResponse(**job_info)
+    except FileNotFoundError:
+        raise HTTPException(status_code=404, detail=f"Training data for {agent} not found")
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

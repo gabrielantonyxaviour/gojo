@@ -37,6 +37,9 @@ USER appuser
 # Copy the source code into the container.
 COPY . .
 
+# Make sure the scripts directory is included
+COPY app/scripts /app/scripts
+
 # Expose the port that the application listens on.
 EXPOSE 3000
 ENV PORT=3000
