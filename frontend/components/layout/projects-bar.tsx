@@ -25,7 +25,7 @@ export function ProjectsBar() {
     {
       id: 1,
       projectId: "dckadtgfjert",
-      name: "Chainlink Protocol x Chiliz Chain",
+      name: "Private crosschain Airdrop",
     },
     {
       id: 2,

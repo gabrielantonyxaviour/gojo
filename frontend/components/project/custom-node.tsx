@@ -95,14 +95,20 @@ function CustomNode(node: any) {
           <Separator />
           <p className="text-sm pb-2 pt-4">AI Agents</p>
           <div className="flex justify-center space-x-2">
-            <Image src="/chains/neon.png" width={20} height={20} alt="robot" />
             <Image
-              src="/chains/gnosis.png"
+              src="/agents/layerzero.png"
+              width={20}
+              height={20}
+              alt="robot"
+              className="bg-white rounded-full"
+            />
+            <Image
+              src="/agents/fhenix.png"
               width={20}
               height={20}
               alt="robot"
             />
-            <Image src="/chains/skale.png" width={20} height={20} alt="robot" />
+            <Image src="/agents/sign.png" width={20} height={20} alt="robot" />
           </div>
           <p className="text-sm pt-6 pb-1">Deployment</p>
           <p className="text-muted-foreground">
