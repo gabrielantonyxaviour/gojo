@@ -152,3 +152,8 @@ Sat Night to morning
 6. Build frontend components
 7. Integrate frontend
 8. Subgraphs
+
+## LAter
+
+1. IP metadata usage
+2. Create new group when revenue gets registered. REvenue flow of Story protocol

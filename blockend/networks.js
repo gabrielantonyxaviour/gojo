@@ -26,7 +26,9 @@ const networks = {
     layerZeroTesting: "0x08AC2b69feB202b34aD7c65E5Ac876E901CA6216",
     aiAgentNft: "0xBbc7268f991b6325Ab733f7250da42243900C71a",
     resourceNft: "0x17517F552d14E3ae1b2a8005f594D7916CE6466d",
-    gojoIp: "0x9Fa2f0872498f56Fec437d92D66842f162c6B922",
+    gojoIpWithResource: "",
+    gojoIpWithRegsiter: "0x9288277372982b74C174132B5f43B9b1900855Fd",
+    gojoIpWithout: "0xfe5DE471869361B214afD5D129C76E1d7cD3C61E",
   },
   baseSepolia: {
     url:

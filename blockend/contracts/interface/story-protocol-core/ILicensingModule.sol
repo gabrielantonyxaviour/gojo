@@ -104,14 +104,12 @@ interface ILicensingModule is IModule {
     /// @param licenseTermsIds The IDs of the license terms that the parent IP supports.
     /// @param licenseTemplate The address of the license template of the license terms Ids.
     /// @param royaltyContext The context of the royalty.
-    /// @param maxMintingFee The maximum minting fee that the caller is willing to pay. if set to 0 then no limit.
     function registerDerivative(
         address childIpId,
         address[] calldata parentIpIds,
         uint256[] calldata licenseTermsIds,
         address licenseTemplate,
-        bytes calldata royaltyContext,
-        uint256 maxMintingFee
+        bytes calldata royaltyContext
     ) external;
 
     /// @notice Registers a derivative with license tokens.
