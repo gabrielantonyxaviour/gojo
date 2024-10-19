@@ -1,5 +1,5 @@
 from typing import List, Dict
-from src.token_counter import num_tokens_from_messages
+from app.token_counter import num_tokens_from_messages
 
 def estimate_fine_tuning_cost(dataset: List[Dict]):
     MAX_TOKENS_PER_EXAMPLE = 16385
