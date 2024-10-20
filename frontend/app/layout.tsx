@@ -5,6 +5,9 @@ import { Toaster } from "@/components/ui/toaster";
 import { EnvironmentStoreProvider } from "@/components/context";
 import Layout from "@/components/layout";
 import { ReactFlowProvider } from "@xyflow/react";
+import { PrivyProvider } from "@privy-io/react-auth";
+import { WalletProvider } from "@/components/providers/wallet-provider";
+
 export const metadata: Metadata = {
   title: "Gojo",
   description:
@@ -26,10 +29,12 @@ export default function RootLayout({
             enableSystem
             disableTransitionOnChange
           >
-            <ReactFlowProvider>
-              <Toaster />
-              <Layout>{children}</Layout>
-            </ReactFlowProvider>
+            <WalletProvider>
+              <ReactFlowProvider>
+                <Toaster />
+                <Layout>{children}</Layout>
+              </ReactFlowProvider>
+            </WalletProvider>
           </ThemeProvider>
         </body>
       </html>

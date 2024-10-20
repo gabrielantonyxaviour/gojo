@@ -159,10 +159,9 @@ Sat Night to morning
 
 ## Steps
 
-1. Complete LayerZero
-2. Test full contracts flow - 4 hours
-3. Complete UI fe upload - 2 hours
-4. Integrate XMTP - 2 hours
-5. Fix Phala - 2 hours
-6. Sign Protocol - Test - 2 hours
-7. Full project flow
+1. Test full contracts flow - 2 hours - 10pm
+2. Complete UI fe upload - 2 hours - 12 am
+3. Integrate XMTP - 2 hours - 2 am
+4. Fix Phala - 2 hours - 5 am
+5. Sign Protocol - Test - 7 am
+6. Full project flow
