@@ -7,7 +7,7 @@ task("approve-skale", "Approve SKALE").setAction(async (taskArgs) => {
   console.log(signer.address);
 
   const args = [
-    "0x35913884404941d616Ba76a90702572236DaF317",
+    "0xB32e77dc18A4a6afDccBD58517f869A905E58Ca8",
     "10000000000000000000",
   ];
 
