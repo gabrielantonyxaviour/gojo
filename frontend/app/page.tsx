@@ -1,7 +1,9 @@
 "use client";
 
-import Home from "@/components/home";
-
+import dynamic from "next/dynamic";
+const XmtpWrapper = dynamic(() => import("@/components/home/xmtp-wrapper"), {
+  ssr: false,
+});
 export default function HomePage() {
-  return <Home />;
+  return <XmtpWrapper />;
 }

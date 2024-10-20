@@ -26,9 +26,18 @@ import { useEnvironmentStore } from "../context";
 import { getChainImage } from "@/lib/utils";
 import { useWallets } from "@privy-io/react-auth";
 export default function AskGojoSheet({
+  isPWA,
   askGojo,
+  onLogout,
+  isContained = false,
+  isConsent = false,
 }: {
   askGojo: { open: boolean; node: Node | null };
+  isPWA?: boolean;
+  wallet: any;
+  onLogout: any;
+  isContained?: boolean;
+  isConsent?: boolean;
 }) {
   const { setOpenAskGojo, setNodeOpenAskGojo } = useEnvironmentStore(
     (store) => store

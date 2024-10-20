@@ -164,3 +164,11 @@ Sat Night to morning
 3. Integrate XMTP - 2 hours - 3:30 am
 4. Sign Protocol and Coinbase MPC - Test - 6 am
 5. Full project flow - 9 am
+
+## IMPORTANT POINTS
+
+1. Problem with hackathons - the knowledge gap, what do protocols actually need from hacks
+2. ⁠Wasted code from hacakthons. Finding good code is hard. The new hackathon?
+3. ⁠ChatGPT not useful? Dynamic growth nature of web3 protocols
+4. ⁠Why TEE and XMTP?
+5. ⁠Win win win situation. Pros - noobs - protocols
