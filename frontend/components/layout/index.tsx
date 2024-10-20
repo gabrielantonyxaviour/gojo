@@ -8,29 +8,88 @@ import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Button } from "../ui/button";
 import { Card, CardContent } from "../ui/card";
-import { getChainImage, shortenAddress } from "@/lib/utils";
+import {
+  getChainImage,
+  getPublicClient,
+  mintTokens,
+  shortenAddress,
+  skalePublicClient,
+  storyPublicClient,
+} from "@/lib/utils";
 import { Separator } from "../ui/separator";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { polygonAmoy, skaleEuropaTestnet, storyTestnet } from "viem/chains";
+import {
+  blast,
+  polygonAmoy,
+  skaleEuropaTestnet,
+  storyTestnet,
+} from "viem/chains";
+import { useEnvironmentStore } from "../context";
+import { formatEther } from "viem";
+import { useToast } from "@/hooks/use-toast";
+import { ToastAction } from "@radix-ui/react-toast";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
+  const { setBalance, balance } = useEnvironmentStore((state) => state);
   const { ready: privyReady, authenticated, logout } = usePrivy();
   const [openWalletPopover, setOpenWalletPopover] = useState(false);
   const { ready: walletsReady, wallets } = useWallets();
   const pathName = usePathname();
   const router = useRouter();
+  const { toast } = useToast();
 
   useEffect(() => {
     if ((!authenticated || !walletsReady || !privyReady) && pathName != "/") {
       router.push("/");
     }
-    console.log("chainId");
-    console.log(wallets.length > 0 ? wallets[0].chainId : "NO");
-  }, [authenticated, walletsReady, privyReady, pathName]);
+    if (authenticated && walletsReady && privyReady) {
+      getPublicClient(wallets[0].chainId)
+        .getBalance({
+          address: wallets[0].address as `0x${string}`,
+        })
+        .then((balance) => {
+          console.log("FETCHING BALANCE");
+          setBalance(formatEther(balance));
+          if (
+            wallets[0].chainId == `eip155:${skaleEuropaTestnet.id}` &&
+            parseFloat(formatEther(balance)) < 0.1
+          ) {
+            mintTokens(wallets[0].address as `0x${string}`).then((txHash) => {
+              toast({
+                title: "Welcome Aboard! 🚀",
+                description:
+                  "You have been minted 0.1 sFUEL to use the app. No more gas fees :)",
+                action: (
+                  <ToastAction
+                    altText="Goto schedule to undo"
+                    onClick={() => {
+                      window.open(
+                        "https://juicy-low-small-testnet.explorer.testnet.skalenodes.com/tx/" +
+                          txHash,
+                        "_blank"
+                      );
+                    }}
+                  >
+                    View Tx
+                  </ToastAction>
+                ),
+              });
+              skalePublicClient
+                .getBalance({
+                  address: wallets[0].address as `0x${string}`,
+                })
+                .then((balance) => {
+                  setBalance(formatEther(balance));
+                });
+            });
+          }
+        });
+    }
+  }, [authenticated, walletsReady, privyReady, pathName, wallets]);
 
   useEffect(() => {}, []);
 
@@ -66,6 +125,14 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                         alt="avatar"
                         className="rounded-full my-2"
                       />
+                      <p>
+                        {parseFloat(balance).toFixed(2)}{" "}
+                        {wallets[0].chainId == `eip155:${skaleEuropaTestnet.id}`
+                          ? "sFUEL"
+                          : wallets[0].chainId == `eip155:${polygonAmoy.id}`
+                          ? "POL"
+                          : "IP"}
+                      </p>
                       <Separator orientation="vertical" className="h-[44px]" />
                       <img
                         src={`https://noun-api.com/beta/pfp?name=${wallets[0].address}`}
@@ -80,8 +147,8 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                     </CardContent>
                   </Card>
                 </PopoverTrigger>
-                <PopoverContent className="bg-neutral-900 w-[200px]">
-                  <div className="flex flex-col space-y-1">
+                <PopoverContent className="bg-neutral-900 w-[250px]">
+                  <div className="flex flex-col space-y-2">
                     <Button
                       variant={
                         wallets[0].chainId == `eip155:${skaleEuropaTestnet.id}`

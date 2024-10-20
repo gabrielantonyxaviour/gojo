@@ -3,10 +3,16 @@ import Title from "./title";
 import { SearchBar } from "./search-bar";
 import { usePrivy, useWallets } from "@privy-io/react-auth";
 import ConnectButton from "../ui/custom/connect-button";
-import { useEffect, useState } from "react";
-import { Client, useClient } from "@xmtp/react-sdk";
+import { useCallback, useEffect, useState } from "react";
+import {
+  Client,
+  useClient,
+  useConversations,
+  useStartConversation,
+} from "@xmtp/react-sdk";
 import { ethers } from "ethers";
 import ConnectXmtpButton from "../ui/custom/connect-xmtp-button";
+import { CORE_AI_AGENT_XMTP_ADDRESS } from "@/lib/utils";
 
 export default function Home() {
   const { login, authenticated } = usePrivy();
@@ -15,7 +21,21 @@ export default function Home() {
   const [ethersSigner, setEthersSigner] = useState<ethers.Signer | null>(null);
   const { client, error, isLoading, initialize, disconnect } = useClient();
   const [xmtpLoading, setXmtpLoading] = useState(false);
-
+  const [cachedConversation, setCachedConversation] = useState<any>(null);
+  const [conversation, setConversation] = useState<any>(null);
+  const { startConversation } = useStartConversation();
+  const { conversations } = useConversations();
+  useEffect(() => {
+    if (authenticated && isOnNetwork) {
+      const filtered = conversations.filter(
+        (conversation) =>
+          conversation.peerAddress === CORE_AI_AGENT_XMTP_ADDRESS
+      );
+      if (filtered.length > 0) {
+        setConversation(filtered[0]);
+      }
+    }
+  }, [authenticated, isOnNetwork, client]);
   useEffect(() => {
     const initialIsOnNetwork =
       localStorage.getItem("isOnNetwork") === "true" || false;
@@ -124,7 +144,7 @@ export default function Home() {
           }}
         />
       ) : (
-        <SearchBar />
+        <SearchBar conversation={conversation} />
       )}
     </div>
   );

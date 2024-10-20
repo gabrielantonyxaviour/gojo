@@ -79,24 +79,6 @@ export function ProjectsBar() {
             {project.name}
           </Link>
         ))}
-        <Separator className="my-4" />
-        <div className="flex justify-center ">
-          <Link
-            href="/"
-            className={cn(
-              buttonVariants({ variant: "ghost" }),
-              "flex space-x-2 px-8 py-6"
-            )}
-            onClick={() => {
-              setOpenProjectsBar(false);
-            }}
-          >
-            <IconPlus className="text-black dark:text-neutral-300" />
-            <p className="2xl:text-lg text-md font-medium text-black dark:text-neutral-300">
-              Create new project
-            </p>
-          </Link>
-        </div>
       </SheetContent>
     </Sheet>
   );

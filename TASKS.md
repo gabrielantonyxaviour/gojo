@@ -159,11 +159,13 @@ Sat Night to morning
 
 ## Steps
 
-1. Test full contracts flow - 2 hours - 1:15am
-2. Complete UI fe upload - 2 hours - 2:00 am
-3. Integrate XMTP - 2 hours - 3:30 am
-4. Sign Protocol and Coinbase MPC - Test - 6 am
-5. Full project flow - 9 am
+1. Test full contracts flow - 1 hour
+2. Complete UI - 30 mins
+3. Integrate XMTP - 30 mins
+4. Setup Phala with Message kit and connect fe - 1 hour
+5. Contract calls - 1 hour
+6. Use MPC wallets - 30 mins?
+7. Upload to Walrus - 30 mins
 
 ## IMPORTANT POINTS
 
