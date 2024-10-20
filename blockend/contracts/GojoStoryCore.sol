@@ -2,6 +2,7 @@
 pragma solidity ^0.8.26;
 
 import { OApp, Origin, MessagingFee, MessagingReceipt} from "@layerzerolabs/oapp-evm/contracts/oapp/OApp.sol";
+import { OAppOptionsType3 } from "@layerzerolabs/oapp-evm/contracts/oapp/libs/OAppOptionsType3.sol";
 import "./interface/IGojoWrappedUsd.sol";
 import "./interface/IGojoStoryUsdWrapper.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
@@ -15,11 +16,12 @@ error InvalidCaller(address caller);
 error NotProjectOwner(uint256 projectId, address owner);
 error InvalidCrosschainCaller(uint32 eid, bytes32 caller);
 
-contract GojoStoryCore is OApp{
+contract GojoStoryCore is OApp, OAppOptionsType3 {
     
     struct ConstructorParams{
         address endpoint;
         address gojoCoreAIAgent;
+        address gojoRelayer;
     }
 
     struct Project{
@@ -54,6 +56,7 @@ contract GojoStoryCore is OApp{
 
     address public gojoCoreAIAgent;
     bytes32 public gojoCoreAddress;
+    bytes32 public gojoRelayer;
     address public gojoStoryUsdWrapperAddress;
     IIPAssetRegistry public constant IP_ASSET_REGISTRY = IIPAssetRegistry(0x1a9d0d28a0422F26D31Be72Edc6f13ea4371E11B);
     IGroupingModule public constant GROUPING_MODULE = IGroupingModule(0x26Eb59B900FD158396931d2349Fd6B08f0390e76);
@@ -80,15 +83,16 @@ contract GojoStoryCore is OApp{
     constructor(ConstructorParams memory _params) OApp(_params.endpoint, msg.sender) Ownable(msg.sender) {
         gojoCoreAIAgent = _params.gojoCoreAIAgent;
         resourceIdCount = 0;
+        gojoRelayer = addressToBytes32(_params.gojoRelayer);
     }
 
-    event ResourceUploaded(uint256 resourceId, string metadata, string ipMetadata, address owner, uint32 aiAgentId, uint256 assetTokenId, uint256 ipTokenId);
-    event DomainSpecificAiAgentAdded(DomainSpecificAiAgent[] agent);
+    event ResourceUploaded(uint256 resourceId, string metadata, string ipMetadata, address owner, address registeredIp, uint32 aiAgentId, uint256 assetTokenId);
+    event DomainSpecificAiAgentAdded(uint32 aiAgentId, DomainSpecificAiAgent agent);
     event MessageSent(bytes32 guid, uint32 dstEid, bytes payload, MessagingFee fee, uint64 nonce);
     event MessageReceived(bytes32 guid, Origin origin, address executor, bytes payload, bytes extraData);
     
-    modifier onlyGojoCore(uint32 _eid, bytes32 _sender){
-        if(_eid != SKALE_EID || _sender != gojoCoreAddress) revert InvalidCrosschainCaller(_eid, _sender);
+    modifier onlyGojoRelayer(uint32 _eid, bytes32 _sender){
+        if(_eid != POLYGON_EID || _sender != gojoRelayer) revert InvalidCrosschainCaller(_eid, _sender);
         _;
     }
 
@@ -101,66 +105,44 @@ contract GojoStoryCore is OApp{
         gojoStoryUsdWrapperAddress = _gojoStoryUsdWrapperAddress;
     }
 
-    function createAiAgents(CreateAiAgentsInput[] memory aiAgents, bytes calldata _options) external payable onlyOwner {
-        DomainSpecificAiAgent[] memory _domainSpecificAiAgents = new DomainSpecificAiAgent[](aiAgents.length);
-        for(uint i = 0; i < aiAgents.length; i++){
-            (address groupId, address aiAgentAddress) = _registerAiAgentIp(aiAgents[i].metadata, aiAgents[i].ipMetadata);
-            domainSpecificAiAgents[aiAgentsCount] = DomainSpecificAiAgent(aiAgents[i].metadata, aiAgents[i].ipMetadata, groupId, aiAgentAddress);
-            _domainSpecificAiAgents[i]=domainSpecificAiAgents[aiAgentsCount];
-            aiAgentsCount++;
-        }
-        _send(abi.encode(aiAgents), _options);
-        emit DomainSpecificAiAgentAdded(_domainSpecificAiAgents);
-    }
-
-
-    // TODO: How to use ipMetadata?
-    function _registerAiAgentIp(string memory metadata, string memory ipMetadata) internal returns(address groupId, address aiAgentId) {
+    function registerAiAgentIp(string memory metadata, string memory ipMetadata) external returns(address groupId, address aiAgentId) {
         groupId = GROUPING_MODULE.registerGroup(address(SPLIT_POOL));
         uint256 tokenId = gojoAiAgentNft.safeMint(address(this), metadata);
 
         aiAgentId = IP_ASSET_REGISTRY.register(block.chainid, address(gojoAiAgentNft), tokenId);
-        
         LICENSING_MODULE.attachLicenseTerms(aiAgentId, PIL_LICENSE_TEMPLATE, NON_TRANSFERRABLE_COMMERCIAL_USE_LICENSE);
+
         address[] memory parentIpIds = new address[](1);
         parentIpIds[0] = aiAgentId;
         uint256[] memory licenseTermIds = new uint256[](1);
         licenseTermIds[0] = NON_TRANSFERRABLE_COMMERCIAL_USE_LICENSE;
-        
-        LICENSING_MODULE.registerDerivative(groupId, parentIpIds, licenseTermIds, PIL_LICENSE_TEMPLATE, ""); 
 
+        domainSpecificAiAgents[aiAgentsCount] = DomainSpecificAiAgent(metadata, ipMetadata, groupId, aiAgentId);
+        LICENSING_MODULE.registerDerivative(groupId, parentIpIds, licenseTermIds, PIL_LICENSE_TEMPLATE, ""); 
         gojoAiAgentNft.safeTransferFrom(address(this), msg.sender, tokenId);
+        emit DomainSpecificAiAgentAdded(aiAgentsCount, domainSpecificAiAgents[aiAgentsCount]);    
+        aiAgentsCount++;
     }
 
-    // TODO: How to use ipMetadata?
-    function createResource(address groupId, string memory metadata, string memory ipMetadata, uint32 aiAgentId) external {
+    function createResource(uint32 aiAgentId, string memory metadata, string memory ipMetadata) external {
         uint256 tokenId = gojoResourceNft.safeMint(address(this), metadata);
+        address groupId = domainSpecificAiAgents[aiAgentId].resourceGroupAddress;
 
         address resourceId = IP_ASSET_REGISTRY.register(block.chainid, address(gojoResourceNft), tokenId);
         LICENSING_MODULE.attachLicenseTerms(resourceId, PIL_LICENSE_TEMPLATE, NON_TRANSFERRABLE_COMMERCIAL_USE_LICENSE);
+        
         address[] memory ipIds = new address[](1);
         ipIds[0] = resourceId;
-        // TODO: Why does this fail?
         GROUPING_MODULE.addIp(groupId, ipIds); 
         
         gojoResourceNft.safeTransferFrom(address(this), msg.sender, tokenId);
         resources[resourceIdCount] = Resource(metadata, ipMetadata, msg.sender, aiAgentId, resourceId, tokenId);
-        emit ResourceUploaded(resourceIdCount, metadata, ipMetadata, msg.sender, aiAgentId, tokenId, resourceIdCount);
+        emit ResourceUploaded(resourceIdCount, metadata, ipMetadata, msg.sender, resourceId, aiAgentId, tokenId);
         resourceIdCount++;
     }
 
-    function _send(
-        bytes memory _payload,
-        bytes calldata _options
-    ) internal {
-        MessagingReceipt memory _receipt = _lzSend(
-            STORY_EID,
-            _payload,
-            _options,
-            MessagingFee(msg.value, 0),
-            payable(msg.sender)
-        );
-        emit MessageSent(_receipt.guid, STORY_EID, _payload, _receipt.fee, _receipt.nonce);
+    function combineOptionsHelper(uint32 _dstEid, uint16 _msgType, bytes calldata _extraOptions) external view returns (bytes memory) {
+        return combineOptions(_dstEid, _msgType, _extraOptions);
     }
 
     function _lzReceive(
@@ -169,20 +151,19 @@ contract GojoStoryCore is OApp{
         bytes calldata _payload,
         address _executor,  
         bytes calldata _extraData  
-    ) internal override  onlyGojoCore(_origin.srcEid, _origin.sender){
-        Project memory project = abi.decode(_payload, (Project));   
+    ) internal override  onlyGojoRelayer(_origin.srcEid, _origin.sender){
+        (Project memory project) = abi.decode(_payload, (Project));
+
         IGojoStoryUsdWrapper(gojoStoryUsdWrapperAddress).unwrap(project.ipConsumption);
         exportedProjects[exportedProjectsCount] = project;
+
         uint256 aiAgentsUsed = project.aiAgentsUsed.length;
         uint256 revenuePerAgent = project.ipConsumption / aiAgentsUsed;
+
         for(uint i = 0; i < aiAgentsUsed; i++) aiAgentsRevenue[project.aiAgentsUsed[i]] += revenuePerAgent;
+
         emit MessageReceived(_guid, _origin, _executor, _payload, _extraData);
         exportedProjectsCount++;
-    }
-
-    function getQuote(uint32 _dstEid, string memory _message, bytes calldata _options) external view returns (uint256, uint256) {
-        MessagingFee memory quote=_quote(_dstEid, abi.encode(_message), _options, false);
-        return (quote.nativeFee, quote.lzTokenFee);
     }
 
     function addressToBytes32(address _address) public pure returns (bytes32) {

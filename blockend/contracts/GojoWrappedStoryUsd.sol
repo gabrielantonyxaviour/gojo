@@ -5,6 +5,7 @@ pragma solidity ^0.8.26;
 
 import { OApp, Origin, MessagingFee, MessagingReceipt} from "@layerzerolabs/oapp-evm/contracts/oapp/OApp.sol";
 
+import { OAppOptionsType3 } from "@layerzerolabs/oapp-evm/contracts/oapp/libs/OAppOptionsType3.sol";
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
@@ -12,20 +13,23 @@ error NotGojoCore(address caller);
 error InvalidCrosschainCaller(uint32 eid, bytes32 caller);
 error NotEnoughBalance(uint256 balance, uint256 amount);
 
-contract GojoWrappedStoryUSD is ERC20, OApp {
+contract GojoWrappedStoryUSD is ERC20, OApp, OAppOptionsType3 {
+    
     address public gojoCoreAddress;
-    bytes32 public gojoStoryUsdWrapperAddress;
+    bytes32 public gojoRelayer;
+    uint16 public constant SEND = 1;
+    uint16 public constant SEND_ABC = 2;
     uint32 public constant STORY_EID = 40315;
     uint32 public constant SKALE_EID = 40273;
     uint32 public constant POLYGON_EID = 40267;
 
     constructor(string memory name, string memory symbol, address _endpoint) ERC20(name, symbol) OApp(_endpoint, msg.sender) Ownable(msg.sender) {}
     
-    event MessageSent(bytes32 guid, uint32 dstEid, bytes payload, MessagingFee fee, uint64 nonce);
+    event MessageSent(bytes32 guid, uint256 amount);
     event MessageReceived(bytes32 guid, Origin origin, address executor, bytes payload, bytes extraData);
     
-    modifier onlyGojoStory(uint32 _eid, bytes32 _sender){
-        if(_eid != STORY_EID || _sender != gojoStoryUsdWrapperAddress) revert InvalidCrosschainCaller(_eid, _sender);
+    modifier onlyGojoRelayer(uint32 _eid, bytes32 _sender){
+        if(_eid != POLYGON_EID || _sender != gojoRelayer) revert InvalidCrosschainCaller(_eid, _sender);
         _;
     }
 
@@ -33,9 +37,9 @@ contract GojoWrappedStoryUSD is ERC20, OApp {
         gojoCoreAddress = _gojoCoreAddress;
     }
 
-    function setGojoStoryUsdWrapperAddress(bytes32 _gojoStoryUsdWrapperAddress) external onlyOwner {
-        gojoStoryUsdWrapperAddress = _gojoStoryUsdWrapperAddress;
-        setPeer(STORY_EID, _gojoStoryUsdWrapperAddress);
+    function setGojoRelayer(address _gojoRelayer) external onlyOwner {
+        gojoRelayer = addressToBytes32(_gojoRelayer);
+        setPeer(POLYGON_EID, gojoRelayer);
     }
 
     function exportProject(address from, uint256 amount) external {
@@ -43,23 +47,28 @@ contract GojoWrappedStoryUSD is ERC20, OApp {
         _burn(from, amount);
     }
 
-    function unwrap(uint256 _amount, bytes calldata _options) external payable {
+    function bridgeToStory(uint256 _amount, bytes calldata _extraSendOptions, bytes calldata _extraRelayOptions) external payable {
         if(balanceOf(msg.sender) < _amount) revert NotEnoughBalance(balanceOf(msg.sender), _amount);
-        _send(abi.encode(msg.sender, _amount), _options);
+        _burn(msg.sender, _amount);
+        _send(_amount, _extraSendOptions, _extraRelayOptions);
     }
 
     function _send(
-        bytes memory _payload,
-        bytes calldata _options
+        uint256 amount,
+        bytes calldata _extraSendOptions, 
+        bytes calldata _extraRelayOptions
     ) internal {
-        MessagingReceipt memory _receipt = _lzSend(
-            STORY_EID,
-            _payload,
-            _options,
+        bytes memory options = combineOptions(POLYGON_EID, SEND_ABC, _extraSendOptions);
+
+        MessagingReceipt memory receipt=_lzSend(
+            POLYGON_EID,
+            abi.encode(msg.sender, amount, _extraRelayOptions),
+            options,
             MessagingFee(msg.value, 0),
             payable(msg.sender)
         );
-        emit MessageSent(_receipt.guid, STORY_EID, _payload, _receipt.fee, _receipt.nonce);
+
+        emit MessageSent(receipt.guid, amount);
     }
 
     function _lzReceive(
@@ -68,16 +77,27 @@ contract GojoWrappedStoryUSD is ERC20, OApp {
         bytes calldata _payload,
         address _executor,  
         bytes calldata _extraData  
-    ) internal override  onlyGojoStory(_origin.srcEid, _origin.sender){
+    ) internal override  onlyGojoRelayer(_origin.srcEid, _origin.sender) {
         (address receiver, uint256 amount) = abi.decode(_payload, (address, uint256));
         _mint(receiver, amount);
         emit MessageReceived(_guid, _origin, _executor, _payload, _extraData);
     }
 
-    function getQuote(uint32 _dstEid, string memory _message, bytes calldata _options) external view returns (uint256, uint256) {
-        MessagingFee memory quote=_quote(_dstEid, abi.encode(_message), _options, false);
-        return (quote.nativeFee, quote.lzTokenFee);
+    function quote(
+        uint256 tokenAmount,
+        bytes calldata _extraSendOptions,
+        bytes calldata _extraRelayOptions,
+        bool _payInLzToken
+    ) public view returns (MessagingFee memory fee) {
+        bytes memory payload = abi.encode(msg.sender, tokenAmount, _extraRelayOptions);
+        bytes memory options = combineOptions(POLYGON_EID, SEND_ABC, _extraSendOptions);
+        fee = _quote(POLYGON_EID, payload, options, _payInLzToken);
     }
+
+    function combineOptionsHelper(uint32 _dstEid, uint16 _msgType, bytes calldata _extraOptions) external view returns (bytes memory) {
+        return combineOptions(_dstEid, _msgType, _extraOptions);
+    }
+
 
     function addressToBytes32(address _address) public pure returns (bytes32) {
         return bytes32(uint256(uint160(_address)));

@@ -78,7 +78,6 @@ contract GojoIP {
     event ResourceUploaded(uint256 resourceId, string metadata, string ipMetadata, address owner, uint32 aiAgentId, uint256 assetTokenId, uint256 ipTokenId);
     event DomainSpecificAiAgentAdded(DomainSpecificAiAgent[] agent);
 
-    // TODO: How to use ipMetadata?
     function registerAiAgentIp(string memory metadata, string memory ipMetadata) external returns(address groupId, address aiAgentId) {
         groupId = GROUPING_MODULE.registerGroup(address(SPLIT_POOL));
         uint256 tokenId = gojoAiAgentNft.safeMint(address(this), metadata);

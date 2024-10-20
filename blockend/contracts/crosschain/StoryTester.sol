@@ -23,7 +23,6 @@ contract StoryTester is OApp, OAppOptionsType3 {
 
     constructor(address _endpoint, address _owner) OApp(_endpoint, _owner) Ownable(msg.sender) {}
 
-
     function quote(
         uint32 _dstEid,
         uint16 _msgType,

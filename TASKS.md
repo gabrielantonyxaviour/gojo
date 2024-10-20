@@ -164,4 +164,4 @@ Sat Night to morning
 3. Integrate XMTP - 2 hours - 2 am
 4. Fix Phala - 2 hours - 5 am
 5. Sign Protocol - Test - 7 am
-6. Full project flow
+6. Full project flow - 9 am

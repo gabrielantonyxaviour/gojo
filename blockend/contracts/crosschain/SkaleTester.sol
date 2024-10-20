@@ -90,7 +90,6 @@ contract SkaleTester is OApp, OAppOptionsType3 {
         emit MessageReceived(data, _origin.srcEid, _origin.sender);
     }
 
-
     receive() external payable {}
 
 }
