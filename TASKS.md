@@ -159,9 +159,8 @@ Sat Night to morning
 
 ## Steps
 
-1. Test full contracts flow - 2 hours - 12:45am
-2. Complete UI fe upload - 2 hours - 1:30 am
-3. Integrate XMTP - 2 hours - 3:00 am
-4. Fix Phala - 2 hours - 5 am
-5. Sign Protocol - Test - 7 am
-6. Full project flow - 9 am
+1. Test full contracts flow - 2 hours - 1:15am
+2. Complete UI fe upload - 2 hours - 2:00 am
+3. Integrate XMTP - 2 hours - 3:30 am
+4. Sign Protocol and Coinbase MPC - Test - 6 am
+5. Full project flow - 9 am
