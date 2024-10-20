@@ -1,6 +1,6 @@
 const { networks } = require("../../networks");
 
-task("deploy-resource-nft", "Deploys the GojoResourceNft contract")
+task("deploy-royalty", "Deploys the GojoRoyaltyRelayer contract")
   .addOptionalParam(
     "verify",
     "Set to true to verify contract",
@@ -8,33 +8,37 @@ task("deploy-resource-nft", "Deploys the GojoResourceNft contract")
     types.boolean
   )
   .setAction(async (taskArgs) => {
-    console.log(`Deploying GojoResourceNft contract to ${network.name}`);
+    console.log(`Deploying GojoRoyaltyRelayer contract to ${network.name}`);
     console.log("\n__Compiling Contracts__");
     await run("compile");
 
-    const gojoResourceNftFactory = await ethers.getContractFactory(
-      "GojoResourceNft"
+    const gojoRoyaltyRelayerContractFactory = await ethers.getContractFactory(
+      "GojoRoyaltyRelayer"
     );
 
-    const args = ["0x0429A2Da7884CA14E53142988D5845952fE4DF6a"];
+    const args = [
+      networks.polygonAmoy.endpoint,
+      "0x0429A2Da7884CA14E53142988D5845952fE4DF6a",
+    ];
 
-    const gojoResourceNft = await gojoResourceNftFactory.deploy(...args);
+    const gojoRoyaltyRelayerContract =
+      await gojoRoyaltyRelayerContractFactory.deploy(...args);
 
     console.log(
       `\nWaiting ${
         networks[network.name].confirmations
       } blocks for transaction ${
-        gojoResourceNft.deployTransaction.hash
+        gojoRoyaltyRelayerContract.deployTransaction.hash
       } to be confirmed...`
     );
 
-    await gojoResourceNft.deployTransaction.wait(
+    await gojoRoyaltyRelayerContract.deployTransaction.wait(
       networks[network.name].confirmations
     );
 
     console.log(
-      "\nDeployed GojoResourceNft contract to:",
-      gojoResourceNft.address
+      "\nDeployed GojoRoyaltyRelayer contract to:",
+      gojoRoyaltyRelayerContract.address
     );
 
     if (network.name === "localFunctionsTestnet") {
@@ -51,7 +55,7 @@ task("deploy-resource-nft", "Deploys the GojoResourceNft contract")
       try {
         console.log("\nVerifying contract...");
         await run("verify:verify", {
-          address: gojoResourceNft.address,
+          address: gojoRoyaltyRelayerContract.address,
           constructorArguments: args,
         });
         console.log("Contract verified");
@@ -72,6 +76,6 @@ task("deploy-resource-nft", "Deploys the GojoResourceNft contract")
     }
 
     console.log(
-      `\n GojoResourceNft contract deployed to ${gojoResourceNft.address} on ${network.name}`
+      `\n GojoRoyaltyRelayer contract deployed to ${gojoRoyaltyRelayerContract.address} on ${network.name}`
     );
   });

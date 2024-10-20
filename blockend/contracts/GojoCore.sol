@@ -24,6 +24,7 @@ contract GojoCore is OApp, OAppOptionsType3{
         address endpoint;
         address gojoWrappedUsd;
         address gojoCoreAIAgent;
+        address gojoRelayer;
     }
 
     struct Project{
@@ -49,7 +50,7 @@ contract GojoCore is OApp, OAppOptionsType3{
 
     address public gojoWrappedUsd;
     address public gojoCoreAIAgent;
-    bytes32 public gojoStoryCoreAddress;
+    bytes32 public gojoRelayer;
     bytes32 public gojoSignHookAddres;
     uint16 public constant SEND = 1;
     uint16 public constant SEND_ABC = 2;
@@ -66,6 +67,7 @@ contract GojoCore is OApp, OAppOptionsType3{
     constructor(ConstructorParams memory _params) OApp(_params.endpoint, msg.sender) Ownable(msg.sender) {
         gojoWrappedUsd = _params.gojoWrappedUsd;
         gojoCoreAIAgent = _params.gojoCoreAIAgent;
+        gojoRelayer = addressToBytes32(_params.gojoRelayer);
         projectIdCount = 0;
     }
 
@@ -75,19 +77,14 @@ contract GojoCore is OApp, OAppOptionsType3{
     event MessageSent(bytes32 guid, uint32 dstEid, bytes payload);
     event MessageReceived(bytes32 guid, Origin origin, address executor, bytes payload, bytes extraData);
     
-    modifier onlyGojoStoryCore(uint32 _eid, bytes32 _sender){
-        if(_eid != STORY_EID || _sender != gojoStoryCoreAddress) revert InvalidCrosschainCaller(_eid, _sender);
+    modifier onlyGojoRelayer(uint32 _eid, bytes32 _sender){
+        if(_eid != POLYGON_EID || _sender != gojoRelayer) revert InvalidCrosschainCaller(_eid, _sender);
         _;
     }
 
     modifier onlyGojoCoreAiAgent(address _sender){
         if(_sender != gojoCoreAIAgent) revert InvalidCaller(_sender);
         _;
-    }
-
-    function setGojoStoryAddress(address _gojoStoryCoreAddress) external onlyOwner {
-        gojoStoryCoreAddress = addressToBytes32(_gojoStoryCoreAddress);
-        setPeer(STORY_EID, addressToBytes32(_gojoStoryCoreAddress));
     }
 
     function setGojoSignHook(address _gojoSignHookAddress) external onlyOwner {
@@ -169,7 +166,7 @@ contract GojoCore is OApp, OAppOptionsType3{
         bytes calldata _payload,
         address _executor,
         bytes calldata _extraData  
-    ) internal override  onlyGojoStoryCore(_origin.srcEid, _origin.sender){
+    ) internal override  onlyGojoRelayer(_origin.srcEid, _origin.sender){
         DomainSpecificAiAgent[] memory agents = abi.decode(_payload, (DomainSpecificAiAgent[]));
         for(uint i = 0; i < agents.length; i++){
             domainSpecificAiAgents[aiAgentsCount] = agents[i];

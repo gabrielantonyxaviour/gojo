@@ -1,6 +1,6 @@
 const { networks } = require("../../networks");
 
-task("deploy-ip", "Deploys the GojoIP contract")
+task("deploy-story-wrapper", "Deploys the GojoStoryUsdWrapper contract")
   .addOptionalParam(
     "verify",
     "Set to true to verify contract",
@@ -8,30 +8,35 @@ task("deploy-ip", "Deploys the GojoIP contract")
     types.boolean
   )
   .setAction(async (taskArgs) => {
-    console.log(`Deploying GojoIP contract to ${network.name}`);
+    console.log(`Deploying GojoStoryUsdWrapper contract to ${network.name}`);
     console.log("\n__Compiling Contracts__");
     await run("compile");
 
-    const gojoIpFactory = await ethers.getContractFactory("GojoIP");
+    const gojoStoryUsdWrapperContractFactory = await ethers.getContractFactory(
+      "GojoStoryUsdWrapper"
+    );
 
-    const args = [
-      networks.storyTestnet.aiAgentNft,
-      networks.storyTestnet.resourceNft,
-    ];
+    const args = [networks.storyTestnet.endpoint];
 
-    const gojoIp = await gojoIpFactory.deploy(...args);
+    const gojoStoryUsdWrapperContract =
+      await gojoStoryUsdWrapperContractFactory.deploy(...args);
 
     console.log(
       `\nWaiting ${
         networks[network.name].confirmations
       } blocks for transaction ${
-        gojoIp.deployTransaction.hash
+        gojoStoryUsdWrapperContract.deployTransaction.hash
       } to be confirmed...`
     );
 
-    await gojoIp.deployTransaction.wait(networks[network.name].confirmations);
+    await gojoStoryUsdWrapperContract.deployTransaction.wait(
+      networks[network.name].confirmations
+    );
 
-    console.log("\nDeployed GojoIP contract to:", gojoIp.address);
+    console.log(
+      "\nDeployed GojoStoryUsdWrapper contract to:",
+      gojoStoryUsdWrapperContract.address
+    );
 
     if (network.name === "localFunctionsTestnet") {
       return;
@@ -47,7 +52,7 @@ task("deploy-ip", "Deploys the GojoIP contract")
       try {
         console.log("\nVerifying contract...");
         await run("verify:verify", {
-          address: gojoIp.address,
+          address: gojoStoryUsdWrapperContract.address,
           constructorArguments: args,
         });
         console.log("Contract verified");
@@ -68,6 +73,6 @@ task("deploy-ip", "Deploys the GojoIP contract")
     }
 
     console.log(
-      `\n GojoIP contract deployed to ${gojoIp.address} on ${network.name}`
+      `\n GojoStoryUsdWrapper contract deployed to ${gojoStoryUsdWrapperContract.address} on ${network.name}`
     );
   });

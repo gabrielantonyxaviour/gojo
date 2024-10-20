@@ -6,7 +6,7 @@ import { OApp, MessagingFee, Origin } from "@layerzerolabs/oapp-evm/contracts/oa
 import { OAppOptionsType3 } from "@layerzerolabs/oapp-evm/contracts/oapp/libs/OAppOptionsType3.sol";
 import { Ownable } from "@openzeppelin/contracts/access/Ownable.sol";
 
-contract GojoRelayer is OApp, OAppOptionsType3 {
+contract GojoRoyaltyRelayer is OApp, OAppOptionsType3 {
 
     string public data = "Nothing received yet";
     uint16 public constant SEND = 1;
@@ -15,8 +15,7 @@ contract GojoRelayer is OApp, OAppOptionsType3 {
     uint32 public constant SKALE_EID = 40273;
     uint32 public constant POLYGON_EID = 40267;
 
-    event MessageRelayed(string message, uint32 dstEid);
-    event MessageReceived(string message, uint32 senderEid, bytes32 sender);
+    event MessageRelayed(address sender, uint256 amount, uint32 dstEid);
     error InvalidMsgType();
 
     constructor(address _endpoint, address _owner) OApp(_endpoint, _owner) Ownable(msg.sender) {}
@@ -42,21 +41,19 @@ contract GojoRelayer is OApp, OAppOptionsType3 {
         address,  
         bytes calldata 
     ) internal override {
-        (string memory _data, bytes memory relayOptions) = abi.decode(message, (string, bytes));
-        data = _data;
+        (address sender, uint256 amount, bytes memory relayOptions) = abi.decode(message, (address, uint256, bytes));
     
-        string memory _newMessage = "Source chain said HI!";
         uint32 _destinationEid = _origin.srcEid == SKALE_EID ? STORY_EID : SKALE_EID;
 
         bytes memory _options= this.combineOptionsHelper(_destinationEid, SEND, relayOptions);
         _lzSend(
             _destinationEid,
-            abi.encode(_newMessage),
+            abi.encode(sender, amount),
             _options,
             MessagingFee(msg.value, 0),
             payable(address(this))
         );
-        emit MessageRelayed(_newMessage, _origin.srcEid);
+        emit MessageRelayed(sender, amount, _origin.srcEid);
     }
 
 

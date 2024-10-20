@@ -26,7 +26,6 @@ contract GojoStoryUsdWrapper is OApp, OAppOptionsType3 {
     uint32 public constant POLYGON_EID = 40267;
 
     constructor(address _endpoint) OApp(_endpoint, msg.sender) Ownable(msg.sender) {
-
     }
     
     event MessageSent(bytes32 guid, uint256 amount);

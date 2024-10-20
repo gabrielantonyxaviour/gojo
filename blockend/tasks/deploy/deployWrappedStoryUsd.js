@@ -1,6 +1,6 @@
 const { networks } = require("../../networks");
 
-task("deploy-gojo-story", "Deploys the Sigma contract")
+task("deploy-story-wrapper", "Deploys the GojoWrappedStoryUsd contract")
   .addOptionalParam(
     "verify",
     "Set to true to verify contract",
@@ -8,33 +8,35 @@ task("deploy-gojo-story", "Deploys the Sigma contract")
     types.boolean
   )
   .setAction(async (taskArgs) => {
-    console.log(`Deploying Sigma contract to ${network.name}`);
+    console.log(`Deploying GojoWrappedStoryUsd contract to ${network.name}`);
     console.log("\n__Compiling Contracts__");
     await run("compile");
 
-    const gojoStoryContractFactory = await ethers.getContractFactory("Sigma");
+    const gojoWrappedStoryUsdContractFactory = await ethers.getContractFactory(
+      "GojoWrappedStoryUsd"
+    );
 
-    const endpoint = networks[network.name].endpoint;
-    const owner = "0x0429A2Da7884CA14E53142988D5845952fE4DF6a";
+    const args = [networks.storyTestnet.endpoint];
 
-    const args = [endpoint, owner];
-    console.log(args);
-
-    const gojoStoryContract = await gojoStoryContractFactory.deploy(...args);
+    const gojoWrappedStoryUsdContract =
+      await gojoWrappedStoryUsdContractFactory.deploy(...args);
 
     console.log(
       `\nWaiting ${
         networks[network.name].confirmations
       } blocks for transaction ${
-        gojoStoryContract.deployTransaction.hash
+        gojoWrappedStoryUsdContract.deployTransaction.hash
       } to be confirmed...`
     );
 
-    await gojoStoryContract.deployTransaction.wait(
+    await gojoWrappedStoryUsdContract.deployTransaction.wait(
       networks[network.name].confirmations
     );
 
-    console.log("\nDeployed Sigma contract to:", gojoStoryContract.address);
+    console.log(
+      "\nDeployed GojoWrappedStoryUsd contract to:",
+      gojoWrappedStoryUsdContract.address
+    );
 
     if (network.name === "localFunctionsTestnet") {
       return;
@@ -50,7 +52,7 @@ task("deploy-gojo-story", "Deploys the Sigma contract")
       try {
         console.log("\nVerifying contract...");
         await run("verify:verify", {
-          address: gojoStoryContract.address,
+          address: gojoWrappedStoryUsdContract.address,
           constructorArguments: args,
         });
         console.log("Contract verified");
@@ -71,6 +73,6 @@ task("deploy-gojo-story", "Deploys the Sigma contract")
     }
 
     console.log(
-      `\n Sigma contract deployed to ${gojoStoryContract.address} on ${network.name}`
+      `\n GojoWrappedStoryUsd contract deployed to ${gojoWrappedStoryUsdContract.address} on ${network.name}`
     );
   });

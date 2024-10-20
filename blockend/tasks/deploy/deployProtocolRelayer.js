@@ -1,6 +1,6 @@
 const { networks } = require("../../networks");
 
-task("deploy-ai-agent-nft", "Deploys the GojoAiAgentNft contract")
+task("deploy-protocol", "Deploys the GojoProtocolRelayer contract")
   .addOptionalParam(
     "verify",
     "Set to true to verify contract",
@@ -8,33 +8,37 @@ task("deploy-ai-agent-nft", "Deploys the GojoAiAgentNft contract")
     types.boolean
   )
   .setAction(async (taskArgs) => {
-    console.log(`Deploying GojoAiAgentNft contract to ${network.name}`);
+    console.log(`Deploying GojoProtocolRelayer contract to ${network.name}`);
     console.log("\n__Compiling Contracts__");
     await run("compile");
 
-    const gojoAiAgentNftFactory = await ethers.getContractFactory(
-      "GojoAiAgentNft"
+    const gojoProtocolRelayerContractFactory = await ethers.getContractFactory(
+      "GojoProtocolRelayer"
     );
 
-    const args = ["0x0429A2Da7884CA14E53142988D5845952fE4DF6a"];
+    const args = [
+      networks.polygonAmoy.endpoint,
+      "0x0429A2Da7884CA14E53142988D5845952fE4DF6a",
+    ];
 
-    const gojoAiAgentNft = await gojoAiAgentNftFactory.deploy(...args);
+    const gojoProtocolRelayerContract =
+      await gojoProtocolRelayerContractFactory.deploy(...args);
 
     console.log(
       `\nWaiting ${
         networks[network.name].confirmations
       } blocks for transaction ${
-        gojoAiAgentNft.deployTransaction.hash
+        gojoProtocolRelayerContract.deployTransaction.hash
       } to be confirmed...`
     );
 
-    await gojoAiAgentNft.deployTransaction.wait(
+    await gojoProtocolRelayerContract.deployTransaction.wait(
       networks[network.name].confirmations
     );
 
     console.log(
-      "\nDeployed GojoAiAgentNft contract to:",
-      gojoAiAgentNft.address
+      "\nDeployed GojoProtocolRelayer contract to:",
+      gojoProtocolRelayerContract.address
     );
 
     if (network.name === "localFunctionsTestnet") {
@@ -51,7 +55,7 @@ task("deploy-ai-agent-nft", "Deploys the GojoAiAgentNft contract")
       try {
         console.log("\nVerifying contract...");
         await run("verify:verify", {
-          address: gojoAiAgentNft.address,
+          address: gojoProtocolRelayerContract.address,
           constructorArguments: args,
         });
         console.log("Contract verified");
@@ -72,6 +76,6 @@ task("deploy-ai-agent-nft", "Deploys the GojoAiAgentNft contract")
     }
 
     console.log(
-      `\n GojoAiAgentNft contract deployed to ${gojoAiAgentNft.address} on ${network.name}`
+      `\n GojoProtocolRelayer contract deployed to ${gojoProtocolRelayerContract.address} on ${network.name}`
     );
   });
