@@ -156,3 +156,13 @@ Sat Night to morning
 
 1. IP metadata usage
 2. Create new group when revenue gets registered. REvenue flow of Story protocol
+
+## Steps
+
+1. Complete LayerZero
+2. Test full contracts flow - 4 hours
+3. Complete UI fe upload - 2 hours
+4. Integrate XMTP - 2 hours
+5. Fix Phala - 2 hours
+6. Sign Protocol - Test - 2 hours
+7. Full project flow

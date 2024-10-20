@@ -26,11 +26,6 @@ contract SkaleTester is OApp, OAppOptionsType3 {
 
     constructor(address _endpoint, address _owner) OApp(_endpoint, _owner) Ownable(msg.sender) {}
 
-    function encodeMessage(string memory _message, uint16 _msgType, bytes memory _extraRelayOptions) public pure returns (bytes memory) {
-        uint256 extraOptionsLength = _extraRelayOptions.length;
-        return abi.encode(_message, _msgType, extraOptionsLength, _extraRelayOptions, extraOptionsLength);
-    }
-
     function quote(
         uint32 _dstEid,
         uint16 _msgType,
@@ -39,7 +34,7 @@ contract SkaleTester is OApp, OAppOptionsType3 {
         bytes calldata _extraRelayOptions,
         bool _payInLzToken
     ) public view returns (MessagingFee memory fee) {
-        bytes memory payload = encodeMessage(_message, _msgType, _extraRelayOptions);
+        bytes memory payload = abi.encode(_message, _extraRelayOptions);
         bytes memory options = combineOptions(_dstEid, _msgType, _extraSendOptions);
         fee = _quote(_dstEid, payload, options, _payInLzToken);
     }
@@ -63,34 +58,24 @@ contract SkaleTester is OApp, OAppOptionsType3 {
     function send(
         string memory _message,
         bytes calldata _extraSendOptions, 
-        bytes calldata _extraRelayOptions
+        bytes calldata _extraRelayOptions,
+        uint256 skaleFee
     ) external payable {
         require(bytes(_message).length <= 32, "String exceeds 32 bytes");
 
-        bytes memory options = combineOptions(STORY_EID, SEND_ABC, _extraSendOptions);
+        bytes memory options = combineOptions(POLYGON_EID, SEND_ABC, _extraSendOptions);
 
         _lzSend(
-            STORY_EID,
-            encodeMessage(_message, SEND_ABC, _extraRelayOptions),
+            POLYGON_EID,
+            abi.encode(_message, _extraRelayOptions),
             options,
             // Fee in native gas and ZRO token.
-            MessagingFee(msg.value, 0),
+            MessagingFee(skaleFee, 0),
             // Refund address in case of failed source message.
             payable(msg.sender)
         );
 
-        emit MessageSent(_message, STORY_EID);
-    }
-
-    function decodeMessage(bytes calldata encodedMessage) public pure returns (string memory message, uint16 msgType, uint256 extraOptionsStart, uint256 extraOptionsLength) {
-        extraOptionsStart = 256;  // Starting offset after _message, _msgType, and extraOptionsLength
-        string memory _message;
-        uint16 _msgType;
-
-        // Decode the first part of the message
-        (_message, _msgType, extraOptionsLength) = abi.decode(encodedMessage, (string, uint16, uint256));
-
-        return (_message, _msgType, extraOptionsStart, extraOptionsLength);
+        emit MessageSent(_message, POLYGON_EID);
     }
 
     function _lzReceive(
@@ -100,11 +85,8 @@ contract SkaleTester is OApp, OAppOptionsType3 {
         address,  // Executor address as specified by the OApp.
         bytes calldata  // Any extra data or options to trigger on receipt.
     ) internal override {
-        (string memory _data, uint16 _msgType, uint256 extraOptionsStart, uint256 extraOptionsLength) = decodeMessage(message);
+        (string memory _data) = abi.decode(message, (string));
         data = _data;
-
-        if (_msgType == SEND_ABC) revert InvalidMsgType();
-
         emit MessageReceived(data, _origin.srcEid, _origin.sender);
     }
 

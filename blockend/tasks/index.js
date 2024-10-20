@@ -3,3 +3,4 @@ exports.setCrosschainAddress = require("./setCrosschainAddress");
 exports.testSend = require("./testSend");
 exports.getQuote = require("./getQuote");
 exports.story = require("./story");
+exports.crosschain = require("./crosschain");

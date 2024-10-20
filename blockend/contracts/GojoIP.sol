@@ -109,8 +109,8 @@ contract GojoIP {
         GROUPING_MODULE.addIp(groupId, ipIds); 
         
         gojoResourceNft.safeTransferFrom(address(this), msg.sender, tokenId);
-        resources[resourceIdCount] = Resource(metadata, ipMetadata, msg.sender, aiAgentId, resourceId, tokenId);
-        emit ResourceUploaded(resourceIdCount, metadata, ipMetadata, msg.sender, aiAgentId, tokenId, resourceIdCount);
+        // resources[resourceIdCount] = Resource(metadata, ipMetadata, msg.sender, aiAgentId, resourceId, tokenId);
+        // emit ResourceUploaded(resourceIdCount, metadata, ipMetadata, msg.sender, aiAgentId, tokenId, resourceIdCount);
         resourceIdCount++;
     }
 
