@@ -6,9 +6,12 @@ import { ProjectsBar } from "./projects-bar";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect } from "react";
+import { Button } from "../ui/button";
+import { Card, CardContent } from "../ui/card";
+import { shortenAddress } from "@/lib/utils";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
-  const { ready: privyReady, authenticated } = usePrivy();
+  const { ready: privyReady, authenticated, user } = usePrivy();
   const { ready: walletsReady } = useWallets();
   const pathName = usePathname();
   const router = useRouter();
@@ -29,11 +32,30 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       {children}
       <ProjectsBar />
       {authenticated && (
-        <div className="fixed bottom-0 left-0 right-0 z-50">
-          <div className="flex justify-center">
-            <Navigation />
+        <>
+          {" "}
+          <div className="fixed bottom-0 left-0 right-0 z-50">
+            <div className="flex justify-center">
+              <Navigation />
+            </div>
           </div>
-        </div>
+          <div className="fixed top-4 right-4 z-50">
+            <div className="flex justify-center">
+              <Card className="bg-neutral-900">
+                <CardContent className="flex space-x-2 py-2 px-6 items-center">
+                  <img
+                    src={`https://noun-api.com/beta/pfp?name=${user?.wallet?.address}`}
+                    width={30}
+                    height={30}
+                    alt="nouns_pfp"
+                    className="rounded-full"
+                  />
+                  <p>{shortenAddress(user?.wallet?.address || "")}</p>
+                </CardContent>
+              </Card>
+            </div>
+          </div>
+        </>
       )}
     </div>
   );
