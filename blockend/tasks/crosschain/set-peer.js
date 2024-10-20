@@ -9,13 +9,13 @@ task("set-peer", "Set Peer").setAction(async (taskArgs) => {
   console.log(signer.address);
 
   const args = [
-    "40273",
-    "0x000000000000000000000000B32e77dc18A4a6afDccBD58517f869A905E58Ca8",
+    "40315",
+    "0x000000000000000000000000A8F191028D7319903d3F648E0f81A8E38Bb80B7D",
   ];
 
   console.log(args);
   const crosschainTester = new ethers.Contract(
-    "0x51b83a5Eb4786295F9F5B62c247287456C3E69e8",
+    "0x2BB1f234D6889B0dc3cE3a4A1885AcfE1DA30936",
     abi,
     signer
   );

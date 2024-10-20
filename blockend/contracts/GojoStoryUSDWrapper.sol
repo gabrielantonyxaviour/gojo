@@ -36,14 +36,9 @@ contract GojoStoryUsdWrapper is OApp, OAppOptionsType3 {
         _;
     }
 
-    function setGojoWrappedUsdAddress(address _gojoWrappedUsdAddress) external onlyOwner {
-        gojoWrappedUsdAddress = addressToBytes32(_gojoWrappedUsdAddress);
-        setPeer(SKALE_EID, addressToBytes32(_gojoWrappedUsdAddress));
-    }
-
     function setGojoRelayer(address _gojoRelayer) external onlyOwner {
         gojoRelayer = addressToBytes32(_gojoRelayer);
-        setPeer(STORY_EID, gojoRelayer);
+        setPeer(POLYGON_EID, gojoRelayer);
     }
 
     function bridgeToSKALE(uint256 _amount, bytes calldata _extraSendOptions, bytes calldata _extraRelayOptions) external payable {
