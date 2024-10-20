@@ -3,7 +3,7 @@
 import { PrivyProvider } from "@privy-io/react-auth";
 import { useTheme } from "next-themes";
 import * as React from "react";
-import { polygonAmoy, skaleEuropa, storyTestnet } from "viem/chains";
+import { polygonAmoy, skaleEuropaTestnet, storyTestnet } from "viem/chains";
 
 interface WalletProviderProps {
   children: React.ReactNode;
@@ -21,8 +21,8 @@ export function WalletProvider({ children }: WalletProviderProps) {
           accentColor: "#ffffff",
           logo: "https://gojo-ethglobal.vercel.app/logo-nouns.png",
         },
-        defaultChain: skaleEuropa,
-        supportedChains: [skaleEuropa, storyTestnet, polygonAmoy],
+        defaultChain: skaleEuropaTestnet,
+        supportedChains: [skaleEuropaTestnet, storyTestnet, polygonAmoy],
         embeddedWallets: {
           createOnLogin: "users-without-wallets",
         },
