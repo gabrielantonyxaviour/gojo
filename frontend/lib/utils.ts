@@ -116,3 +116,21 @@ export async function uploadToWalrus(
     onError(error as Error); // Call error callback
   }
 }
+
+export const idToChain: any = {
+  1_444_673_419: {
+    name: "Skale Testnet",
+    image: "/chains/skale.png",
+    chainId: skaleEuropaTestnet.id,
+  },
+  80002: {
+    name: "Polygon Amoy",
+    image: "/chains/polygon.png",
+    chainId: polygonAmoy.id,
+  },
+  1513: {
+    name: "Story Testnet",
+    image: "/chains/story.png",
+    chainId: storyTestnet.id,
+  },
+};

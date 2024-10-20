@@ -160,12 +160,8 @@ Sat Night to morning
 ## Steps
 
 1. Test full contracts flow - 1 hour
-2. Complete UI - 10 mins
-3. Setup Phala with Message kit and connect fe - 1 hour
-4. Contract calls - 10 mins
-5. Use MPC wallets - 30 mins?
-6. show in Story explorer - 20 mins
-7. XMTP critical bug - 20 mins
+2. Setup Phala with Message kit and connect fe - 1 hour
+3. Contract calls - 30 mins
 
 ## IMPORTANT POINTS
 
@@ -174,3 +170,11 @@ Sat Night to morning
 3. ⁠ChatGPT not useful? Dynamic growth nature of web3 protocols
 4. ⁠Why TEE and XMTP?
 5. ⁠Win win win situation. Pros - noobs - protocols
+
+# Transactions
+
+1. Create resource
+2. Create project
+3. Make generation
+4. Export project
+5. Get consumed IP

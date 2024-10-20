@@ -1,13 +1,13 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.26;
 
-import "./interface/IGojoWrappedUsd.sol";
-import "./interface/IGojoStoryUsdWrapper.sol";
-import { IGroupingModule } from "./interface/story-protocol-core/IGroupingModule.sol";
-import { ILicensingModule } from "./interface/story-protocol-core/ILicensingModule.sol";
-import { IIPAssetRegistry } from "./interface/story-protocol-core/IIPAssetRegistry.sol";
-import "./interface/INFT.sol";
-import "./interface/IMockEvenSplitGroupPool.sol";
+import "../interface/IGojoWrappedUsd.sol";
+import "../interface/IGojoStoryUsdWrapper.sol";
+import { IGroupingModule } from "../interface/story-protocol-core/IGroupingModule.sol";
+import { ILicensingModule } from "../interface/story-protocol-core/ILicensingModule.sol";
+import { IIPAssetRegistry } from "../interface/story-protocol-core/IIPAssetRegistry.sol";
+import "../interface/INFT.sol";
+import "../interface/IMockEvenSplitGroupPool.sol";
 
 error InvalidCaller(address caller);
 error NotProjectOwner(uint256 projectId, address owner);

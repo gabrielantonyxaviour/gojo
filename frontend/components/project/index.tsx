@@ -16,6 +16,7 @@ import { useEnvironmentStore } from "../context";
 import AppTestingSheet from "./app-testing-sheet";
 import CreateEdgeModal from "./create-edge-modal";
 import dynamic from "next/dynamic";
+import { idToChain } from "@/lib/utils";
 const AskGojoSheetWrapper = dynamic(
   () => import("@/components/project/ask-gojo-sheet-wrapper"),
   {
@@ -25,26 +26,12 @@ const AskGojoSheetWrapper = dynamic(
 const initNodes: Node[] = [];
 
 const initEdges: Edge[] = [];
-export default function Project({ name }: { name: string }) {
-  const projects = [
-    {
-      id: 1,
-      projectId: "dckadtgfjert",
-      name: "Private crosschain Airdrop",
-    },
-    {
-      id: 2,
-      projectId: "ackaddffaflo",
-      name: "Base and Arbitrum using Hyperlane",
-    },
-    {
-      id: 3,
-      projectId: "xxxxckadtgdrt",
-      name: "SKALE Network x Chainlink Protocol",
-    },
-  ];
+export default function Project() {
   const [nodes, setNodes, onNodesChange] = useNodesState(initNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(initEdges);
+  const { prompt, setPrompt, setConversations, conversations } =
+    useEnvironmentStore((state) => state);
+  const [isGenerated, setIsGenerated] = useState(false);
 
   const [nodeIds, setNodeIds] = useState(0);
   const [edgeIds, setEdgeIds] = useState(0);
@@ -59,6 +46,83 @@ export default function Project({ name }: { name: string }) {
     console.log("Updating ask gojo");
     console.log(askGojo);
   }, [askGojo]);
+
+  useEffect(() => {
+    if (!isGenerated) {
+      setIsGenerated(true);
+      if (!askGojo) setOpenAskGojo(true);
+      setConversations([
+        ...conversations,
+        {
+          role: "user",
+          message: prompt,
+        },
+      ]);
+
+      fetch("/api/chat", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ prompt }),
+      }).then(async (res) => {
+        const { data } = await res.json();
+        const { text, contracts } = data;
+
+        setConversations([
+          ...conversations,
+          {
+            role: "gojo",
+            message: data.text,
+          },
+        ]);
+        const nodeChains = nodes.map((node) => node.data.chain.chainId);
+        const formattedContracts = contracts.map((c: any) => {
+          return {
+            label: c.name,
+            chain: {
+              name: idToChain[c.chain].name,
+              chainId: c.chain,
+              image: idToChain[c.chain].image,
+            },
+            address: "0x0000000000000000000000000000000000000000",
+            salt: Math.floor(Math.random() * 100000000001),
+          };
+        });
+        const finalContractsData = formattedContracts.map((c: any) => {
+          if (nodeChains.includes(c.chain.chainId)) {
+            return {
+              label: c.label,
+              chain: {
+                name: c.chain.name,
+                chainId: c.chain.chainId,
+                image: c.chain.image,
+              },
+              address: "0x",
+              salt: Math.floor(Math.random() * 100000000001),
+            };
+          }
+        });
+
+        // setNodeIds((prev) => {
+        //   setNodes((nodes) => [
+        //     ...nodes,
+        //     {
+        //       id: prev.toString(),
+        //       type: "custom",
+        //       data: {
+        //         label: contracts
+        //         address: "0x0000000000000000000000000000000000000000",
+        //         salt: Math.floor(Math.random() * 100000000001),
+        //       },
+        //       position: { x: 0, y: 100 },
+        //     },
+        //   ]);
+        // return prev + contracts;
+        // });
+      });
+    }
+  }, [prompt, isGenerated]);
 
   const onAddNode = useCallback(
     (data: {
@@ -103,7 +167,7 @@ export default function Project({ name }: { name: string }) {
       <div className="fixed top-0 left-0 right-0 select-none ">
         <div className="flex justify-center">
           <p className="text-center 2xl:text-lg text-sm font-medium py-2 px-4  bg-gray-50 dark:bg-neutral-900 text-neutral-500 dark:text-neutral-300 rounded-b-lg">
-            {projects[0].name}
+            A Crosschain Airdrop
           </p>
         </div>
       </div>
@@ -124,7 +188,7 @@ export default function Project({ name }: { name: string }) {
       <ExportModal
         open={openExportModal}
         setOpen={setOpenExportModal}
-        name={name}
+        name={"A Crosschain Airdrop"}
       />
       <AskGojoSheetWrapper askGojo={askGojo} />
     </div>

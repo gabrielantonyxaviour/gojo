@@ -64,13 +64,13 @@ export function ProjectsBar() {
         {projects.map((project, idx) => (
           <Link
             key={idx}
-            href={"/projects/" + project.projectId}
+            href={"/project"}
             onClick={() => {
               setOpenProjectsBar(false);
             }}
             className={cn(
               buttonVariants({ variant: "secondary" }),
-              pathName == "/projects/" + project.projectId
+              pathName == "/project"
                 ? " dark:bg-muted dark:text-white dark:hover:bg-muted dark:hover:text-white hover:bg-muted font-medium"
                 : " bg-transparent text-white hover:bg",
               "text-neutral-500 dark:text-neutral-300 justify-start w-full p-6 2xl:text-lg text-md rounded-none "

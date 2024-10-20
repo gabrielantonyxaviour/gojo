@@ -10,9 +10,10 @@ import Suggestions from "./suggestions";
 import { useSendMessage, useStartConversation } from "@xmtp/react-sdk";
 import { CORE_AI_AGENT_XMTP_ADDRESS } from "@/lib/utils";
 import { useRouter } from "next/navigation";
+import { useEnvironmentStore } from "../context";
 
 export function SearchBar({ conversation }: { conversation: any }) {
-  const [prompt, setPrompt] = useState("");
+  const { prompt, setPrompt } = useEnvironmentStore((store) => store);
   const { startConversation } = useStartConversation();
   const { sendMessage } = useSendMessage();
   const [cachedConversation, setCachedConversation] = useState<any>(null);
@@ -55,9 +56,9 @@ export function SearchBar({ conversation }: { conversation: any }) {
                   await handleSendNewMessage(prompt);
                 }
 
-                // TODO Contracts: Send a transaction to create AI agent.
-                // TODO AI AGENT: Call AI agent and go to a new project page.
-                router.push("/projects/1");
+                // TODO Contracts: Send a transaction to create new project.
+
+                router.push("/project");
               }}
             >
               <IconArrowUp className="h-5 w-5"></IconArrowUp>
