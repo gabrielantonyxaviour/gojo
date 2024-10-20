@@ -32,6 +32,16 @@ Finally, all code contributions are stored in **Walrus**, Gojo’s decentralized
 
 In essence, Gojo combines a cross-chain infrastructure, token-based security models, and advanced AI agents to offer a no-code solution for building web3 prototypes. It leverages cutting-edge technologies like LayerZero, TheGraph, and Lit Protocol to create an intuitive, secure, and scalable platform.
 
+# Deployments
+
+GojoCore (SKALE) -
+GojoStoryCore (STORY) -
+GojoStoryUSDWrapper (STORY) -
+GojoWrappedStoryUSD (SKALE) -
+GojoSignHook (POLYGON) -
+GojoProtocolRelayer (POLYGON) -
+GojoRoyaltyRelayer (POLYGON) -
+
 # Sponsors
 
 ## LayerZero
@@ -57,5 +67,5 @@ In essence, Gojo combines a cross-chain infrastructure, token-based security mod
 ## NounsDAO
 
 ## Privy
- 
+
 ## Fhenix
