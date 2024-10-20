@@ -15,9 +15,12 @@ task("deploy-gojo-core", "Deploys the GojoCore contract")
     const gojoCoreContractFactory = await ethers.getContractFactory("GojoCore");
 
     const args = [
-      networks.skaleTestnet.endpoint,
-      "",
-      "0xbE9044946343fDBf311C96Fb77b2933E2AdA8B5D",
+      [
+        networks.skaleTestnet.endpoint,
+        "0xAa25e4A9db1F3e493B9a20279572e4F15Ce6eEa2",
+        "0xbE9044946343fDBf311C96Fb77b2933E2AdA8B5D",
+        "0xF1D62f668340323a6533307Bb0e44600783BE5CA",
+      ],
     ];
 
     const gojoCoreContract = await gojoCoreContractFactory.deploy(...args);

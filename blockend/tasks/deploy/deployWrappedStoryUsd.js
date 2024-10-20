@@ -1,6 +1,6 @@
 const { networks } = require("../../networks");
 
-task("deploy-story-wrapper", "Deploys the GojoWrappedStoryUsd contract")
+task("deploy-wrapped-story", "Deploys the GojoWrappedStoryUsd contract")
   .addOptionalParam(
     "verify",
     "Set to true to verify contract",
@@ -16,7 +16,7 @@ task("deploy-story-wrapper", "Deploys the GojoWrappedStoryUsd contract")
       "GojoWrappedStoryUsd"
     );
 
-    const args = [networks.storyTestnet.endpoint];
+    const args = [networks.skaleTestnet.endpoint];
 
     const gojoWrappedStoryUsdContract =
       await gojoWrappedStoryUsdContractFactory.deploy(...args);

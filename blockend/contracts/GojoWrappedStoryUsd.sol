@@ -13,7 +13,7 @@ error NotGojoCore(address caller);
 error InvalidCrosschainCaller(uint32 eid, bytes32 caller);
 error NotEnoughBalance(uint256 balance, uint256 amount);
 
-contract GojoWrappedStoryUSD is ERC20, OApp, OAppOptionsType3 {
+contract GojoWrappedStoryUsd is ERC20, OApp, OAppOptionsType3 {
     
     address public gojoCoreAddress;
     bytes32 public gojoRelayer;
@@ -23,7 +23,7 @@ contract GojoWrappedStoryUSD is ERC20, OApp, OAppOptionsType3 {
     uint32 public constant SKALE_EID = 40273;
     uint32 public constant POLYGON_EID = 40267;
 
-    constructor(string memory name, string memory symbol, address _endpoint) ERC20(name, symbol) OApp(_endpoint, msg.sender) Ownable(msg.sender) {}
+    constructor(address _endpoint) ERC20("WrappedStoryUSD", "WS") OApp(_endpoint, msg.sender) Ownable(msg.sender) {}
     
     event MessageSent(bytes32 guid, uint256 amount);
     event MessageReceived(bytes32 guid, Origin origin, address executor, bytes payload, bytes extraData);

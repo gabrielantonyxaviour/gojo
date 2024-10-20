@@ -17,9 +17,11 @@ task("deploy-story-core", "Deploys the GojoStoryCore contract")
     );
 
     const args = [
-      networks.storyTestnet.endpoint,
-      "0xbE9044946343fDBf311C96Fb77b2933E2AdA8B5D",
-      "",
+      [
+        networks.storyTestnet.endpoint,
+        "0xbE9044946343fDBf311C96Fb77b2933E2AdA8B5D",
+        "0xF1D62f668340323a6533307Bb0e44600783BE5CA",
+      ],
     ];
 
     const gojoStoryCoreContract = await gojoStoryCoreContractFactory.deploy(
