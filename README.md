@@ -31,3 +31,30 @@ For wallet integration, Gojo uses the **Coinbase Developer Platform**. Specifica
 Finally, all code contributions are stored in **Walrus**, Gojo’s decentralized storage. Developers encrypt their code before storing it, retaining full ownership and control over their intellectual property. When users request code generation, Phala’s AI agents fetch the encrypted data from Walrus, ensuring that user interactions remain secure and private throughout the process.
 
 In essence, Gojo combines a cross-chain infrastructure, token-based security models, and advanced AI agents to offer a no-code solution for building web3 prototypes. It leverages cutting-edge technologies like LayerZero, TheGraph, and Lit Protocol to create an intuitive, secure, and scalable platform.
+
+# Sponsors
+
+## LayerZero
+
+## SKALE
+
+## Story Protocol
+
+## Polygon
+
+## Sign Protocol
+
+## The Graph
+
+## XMTP
+
+## Coinbase Developer Platform
+
+## Walrus
+
+## Phala Network
+
+## NounsDAO
+
+## Privy
+ 
