@@ -34,7 +34,7 @@ export function getChainImage(chainId: string): string {
 }
 
 export const CORE_AI_AGENT_XMTP_ADDRESS =
-  "0xace8655DE7f2a1865DDd686CFcdD47447B86965C";
+  "0xbE9044946343fDBf311C96Fb77b2933E2AdA8B5D";
 
 export const skalePublicClient = createPublicClient({
   chain: skaleEuropaTestnet,

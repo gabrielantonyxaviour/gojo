@@ -161,11 +161,12 @@ Sat Night to morning
 
 1. Test full contracts flow - 1 hour
 2. Complete UI - 30 mins
-3. Integrate XMTP - 30 mins
-4. Setup Phala with Message kit and connect fe - 1 hour
-5. Contract calls - 1 hour
-6. Use MPC wallets - 30 mins?
-7. Upload to Walrus - 30 mins
+3. Setup Phala with Message kit and connect fe - 1 hour
+4. Contract calls - 45 mins
+5. Use MPC wallets - 30 mins?
+6. Upload to Walrus - 30 mins
+7. show in Story explorer - 20 mins
+8. XMTP critical bug - 20 mins
 
 ## IMPORTANT POINTS
 

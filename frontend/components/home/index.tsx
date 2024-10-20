@@ -13,6 +13,9 @@ import {
 import { ethers } from "ethers";
 import ConnectXmtpButton from "../ui/custom/connect-xmtp-button";
 import { CORE_AI_AGENT_XMTP_ADDRESS } from "@/lib/utils";
+import { useEnvironmentStore } from "../context";
+import { IconLogout } from "@tabler/icons-react";
+import { Button } from "../ui/button";
 
 export default function Home() {
   const { login, authenticated } = usePrivy();
@@ -21,9 +24,9 @@ export default function Home() {
   const [ethersSigner, setEthersSigner] = useState<ethers.Signer | null>(null);
   const { client, error, isLoading, initialize, disconnect } = useClient();
   const [xmtpLoading, setXmtpLoading] = useState(false);
-  const [cachedConversation, setCachedConversation] = useState<any>(null);
-  const [conversation, setConversation] = useState<any>(null);
-  const { startConversation } = useStartConversation();
+  const { conversation, setConversation } = useEnvironmentStore(
+    (store) => store
+  );
   const { conversations } = useConversations();
   useEffect(() => {
     if (authenticated && isOnNetwork) {
@@ -64,29 +67,34 @@ export default function Home() {
   }, [authenticated, client]);
 
   const initXmtpWithKeys = async (signer: ethers.Signer) => {
-    const options: { env: "dev" | "local" | "production" | undefined } = {
-      env: "production",
-    };
-    const address = wallets[0]?.address;
-    if (!address) return;
-    let keys: any = loadKeys(address);
-    if (!keys) {
-      console.log("get keys");
-      console.log(signer);
-      console.log({
-        ...options,
-        skipContactPublishing: true,
-        persistConversations: false,
-      });
-      keys = await Client.getKeys(signer, {
-        ...options,
-        skipContactPublishing: true,
-        persistConversations: false,
-      });
-      storeKeys(address, keys);
+    try {
+      const options: { env: "dev" | "local" | "production" | undefined } = {
+        env: "production",
+      };
+      const address = wallets[0]?.address;
+      if (!address) return;
+      let keys: any = loadKeys(address);
+      if (!keys) {
+        console.log("get keys");
+        console.log(signer);
+        console.log({
+          ...options,
+          skipContactPublishing: true,
+          persistConversations: false,
+        });
+        keys = await Client.getKeys(signer, {
+          ...options,
+          skipContactPublishing: true,
+          persistConversations: false,
+        });
+        storeKeys(address, keys);
+      }
+      setXmtpLoading(true);
+      await initialize({ keys, options, signer });
+    } catch (e) {
+      // TODO: Change this temp fix
+      setIsOnNetwork(true);
     }
-    setXmtpLoading(true);
-    await initialize({ keys, options, signer });
   };
 
   const storeKeys = (walletAddress: string, keys: any) => {
@@ -144,7 +152,20 @@ export default function Home() {
           }}
         />
       ) : (
-        <SearchBar conversation={conversation} />
+        <>
+          <SearchBar conversation={conversation} />
+          <Button
+            className="cursor-pointer flex space-x-2"
+            variant={"outline"}
+            onClick={() => {
+              console.log("logout");
+              handleLogout();
+            }}
+          >
+            <IconLogout onClick={handleLogout} />
+            <p>Logout XMTP</p>
+          </Button>
+        </>
       )}
     </div>
   );

@@ -25,6 +25,7 @@ import { Card, CardContent } from "../ui/card";
 import { useEnvironmentStore } from "../context";
 import { getChainImage } from "@/lib/utils";
 import { useWallets } from "@privy-io/react-auth";
+import { useSendMessage, useStreamMessages } from "@xmtp/react-sdk";
 export default function AskGojoSheet({
   askGojo,
 }: {
@@ -33,6 +34,7 @@ export default function AskGojoSheet({
   const { setOpenAskGojo, setNodeOpenAskGojo } = useEnvironmentStore(
     (store) => store
   );
+  const { conversation } = useEnvironmentStore((store) => store);
   const { wallets } = useWallets();
   const [label, setLabel] = useState("");
   const [selectedChain, setSelectedChain] = useState<Chain | null>(null);
@@ -167,6 +169,19 @@ export default function AskGojoSheet({
       node: askGojo.node,
     },
   ]);
+
+  useStreamMessages(conversation);
+  const { sendMessage } = useSendMessage();
+
+  const handleSendMessage = async (newMessage: string) => {
+    if (!newMessage.trim()) {
+      alert("empty message");
+      return;
+    }
+    if (conversation && conversation.peerAddress) {
+      await sendMessage(conversation, newMessage);
+    }
+  };
 
   useEffect(() => {
     if (askGojo.open) {
