@@ -15,6 +15,13 @@ import ExportModal from "./export-modal";
 import { useEnvironmentStore } from "../context";
 import AppTestingSheet from "./app-testing-sheet";
 import CreateEdgeModal from "./create-edge-modal";
+import dynamic from "next/dynamic";
+const AskGojoSheetWrapper = dynamic(
+  () => import("@/components/project/ask-gojo-sheet-wrapper"),
+  {
+    ssr: false,
+  }
+);
 const initNodes: Node[] = [];
 
 const initEdges: Edge[] = [];
@@ -119,7 +126,7 @@ export default function Project({ name }: { name: string }) {
         setOpen={setOpenExportModal}
         name={name}
       />
-      <AskGojoSheet askGojo={askGojo} />
+      <AskGojoSheetWrapper askGojo={askGojo} />
     </div>
   );
 }

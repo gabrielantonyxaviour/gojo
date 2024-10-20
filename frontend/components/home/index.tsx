@@ -28,10 +28,14 @@ export default function Home() {
   }, [isOnNetwork]);
 
   useEffect(() => {
+    console.log("client");
+    console.log(client);
     if (client && !isOnNetwork) {
       setIsOnNetwork(true);
+      console.log("isOnNetwork", isOnNetwork);
     }
     if (authenticated && isOnNetwork) {
+      console.log("SET SIGNER", isOnNetwork);
       const provider = new ethers.providers.Web3Provider(window.ethereum);
       const signer = provider.getSigner();
       setEthersSigner(signer);
@@ -41,12 +45,19 @@ export default function Home() {
 
   const initXmtpWithKeys = async (signer: ethers.Signer) => {
     const options: { env: "dev" | "local" | "production" | undefined } = {
-      env: "dev",
+      env: "production",
     };
     const address = wallets[0]?.address;
     if (!address) return;
     let keys: any = loadKeys(address);
     if (!keys) {
+      console.log("get keys");
+      console.log(signer);
+      console.log({
+        ...options,
+        skipContactPublishing: true,
+        persistConversations: false,
+      });
       keys = await Client.getKeys(signer, {
         ...options,
         skipContactPublishing: true,
@@ -71,7 +82,7 @@ export default function Home() {
   };
 
   const buildLocalStorageKey = (walletAddress: string) => {
-    return walletAddress ? `xmtp:dev:keys:${walletAddress}` : "";
+    return walletAddress ? `xmtp:production:keys:${walletAddress}` : "";
   };
 
   const handleLogout = async () => {
@@ -107,7 +118,7 @@ export default function Home() {
         <ConnectButton login={login} />
       ) : !isOnNetwork ? (
         <ConnectXmtpButton
-          disabled={!ethersSigner}
+          disabled={!ethersSigner || isLoading}
           login={() => {
             initXmtpWithKeys(ethersSigner!);
           }}
