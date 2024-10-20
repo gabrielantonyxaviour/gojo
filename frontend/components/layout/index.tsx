@@ -18,7 +18,7 @@ import {
 import { polygonAmoy, skaleEuropaTestnet, storyTestnet } from "viem/chains";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
-  const { ready: privyReady, authenticated } = usePrivy();
+  const { ready: privyReady, authenticated, logout } = usePrivy();
   const [openWalletPopover, setOpenWalletPopover] = useState(false);
   const { ready: walletsReady, wallets } = useWallets();
   const pathName = usePathname();
@@ -145,7 +145,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                     <Button
                       variant={"secondary"}
                       onClick={() => {
-                        wallets[0].disconnect();
+                        logout();
                         setOpenWalletPopover(false);
                       }}
                     >

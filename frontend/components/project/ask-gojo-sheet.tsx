@@ -23,6 +23,8 @@ import { ScrollArea, ScrollBar } from "../ui/scroll-area";
 import { motion } from "framer-motion";
 import { Card, CardContent } from "../ui/card";
 import { useEnvironmentStore } from "../context";
+import { getChainImage } from "@/lib/utils";
+import { useWallets } from "@privy-io/react-auth";
 export default function AskGojoSheet({
   askGojo,
 }: {
@@ -31,7 +33,7 @@ export default function AskGojoSheet({
   const { setOpenAskGojo, setNodeOpenAskGojo } = useEnvironmentStore(
     (store) => store
   );
-
+  const { wallets } = useWallets();
   const [label, setLabel] = useState("");
   const [selectedChain, setSelectedChain] = useState<Chain | null>(null);
   const [selectContract, setSelectContract] = useState(false);
@@ -325,12 +327,12 @@ export default function AskGojoSheet({
                   </CardContent>
                 </Card>
                 {!c.isAi && (
-                  <Image
-                    src={"/chad.jpg"}
+                  <img
+                    src={`https://noun-api.com/beta/pfp?name=${wallets[0].address}`}
                     width={30}
                     height={30}
-                    alt="chat"
-                    className="rounded-full"
+                    alt="nouns_pfp"
+                    className="rounded-full my-2 "
                   />
                 )}
               </div>
