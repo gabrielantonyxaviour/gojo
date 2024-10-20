@@ -58,3 +58,4 @@ In essence, Gojo combines a cross-chain infrastructure, token-based security mod
 
 ## Privy
  
+## Fhenix
